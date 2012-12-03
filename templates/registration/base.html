@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{% block title %}MWD Registration{% endblock %}</title>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" type="text/css" />
+<script src="{{ STATIC_URL }}bootstrap/js/bootstrap.js" type="text/javascript"></script>
+
+<style type="text/css">
+.header {
+    text-align: center;
+    margin-bottom: 42px;
+}
+
+</style>
+
+{% block head %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+    
+        <div class="header">
+            <h1>MWD REGISTRATION</h1>
+        </div>
+
+        <div class="content"> 
+            <div class="row">
+                <div class="span3"></div>
+                <div class="span6">
+                <!-- begin content block -->
+
+{% block content %}{% endblock %}
+ 
+                <!-- end content block-->
+                </div>
+                <div class="span3"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

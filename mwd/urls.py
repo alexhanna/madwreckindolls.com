@@ -9,6 +9,8 @@ urlpatterns = patterns('',
     # url(r'^$', 'mwd.views.home', name='home'),
     # url(r'^mwd/', include('mwd.foo.urls')),
 
+    url(r'^registration/', include('registration.urls')),
+
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
