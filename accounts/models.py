@@ -6,12 +6,14 @@ from django_localflavor_us.models import USStateField, USPostalCodeField, PhoneN
 
 from django.contrib import admin
 
+"""
 # Requires django 1.5 for one-to-one User Profile extensions
 # https://docs.djangoproject.com/en/1.5/topics/auth/#storing-additional-information-about-users
 #
 # Email address should be equal to the username
 # Email is set in the User model
 #
+"""
 class Skater(models.Model):
     user = models.OneToOneField(User)
     phone = PhoneNumberField()
@@ -91,6 +93,7 @@ class SkateSession(models.Model):
         "Start Date",
         help_text = "Start date for this session. Used for informational purposes only.",
     )
+
     end_date = models.DateField(
         "End Date",
         help_text = "End date for this session. Used for informational purposes only.",
@@ -151,23 +154,5 @@ class SkateSessionPaymentAmount(models.Model):
     )
 
     schedule = models.ForeignKey(SkateSessionPaymentSchedule)
-
-
-
-"""
-" Django Admin settings
-"""
-
-
-class SkateSessionPaymentAmountInline(admin.TabularInline):
-    model = SkateSessionPaymentAmount
-
-class SkateSessionPaymentScheduleAdmin(admin.ModelAdmin):
-    inlines = (SkateSessionPaymentAmountInline,)
-
-
-admin.site.register(SkaterStatus)
-admin.site.register(SkateSessionPaymentSchedule, SkateSessionPaymentScheduleAdmin)
-admin.site.register(SkateSession)
 
 
