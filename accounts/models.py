@@ -49,6 +49,10 @@ class SkaterStatus(models.Model):
     class Meta:
         verbose_name = "Skater Status"
         verbose_name_plural = "Skater Statuses"
+    
+    def __unicode__(self):
+        return self.name
+
 
     name = models.CharField(
         "Status Name", 
@@ -64,15 +68,19 @@ class SkaterStatus(models.Model):
         help_text = "Dollar amount that we should bill these users for each billing period.",
     )
 
-    def __unicode__(self):
-        return self.name
 
 
-
+"""
+" Skating session model
+"   Provides grouping for billing periods and statistics
+"""
 class SkateSession(models.Model):
     class Meta:
         verbose_name = "Skating Session"
         verbose_name_plural = "Skating Sessions"
+    
+    def __unicode__(self):
+        return self.name
 
     name = models.CharField(
         "Session Name", 
@@ -88,10 +96,11 @@ class SkateSession(models.Model):
         help_text = "End date for this session. Used for informational purposes only.",
     )
 
-    def __unicode__(self):
-        return self.name
 
-
+"""
+" Skating Session payment schedule
+"   Provies a model for structuring billing dates and dues amounts
+"""
 class SkateSessionPaymentSchedule(models.Model):
     class Meta:
         verbose_name = "Dues Billing Date"
@@ -122,6 +131,11 @@ class SkateSessionPaymentSchedule(models.Model):
         through='SkateSessionPaymentAmount',
     )
 
+
+"""
+" Skate session payment amount
+"   Provides a way to handle custom payment amounts for billing peroids
+"""
 class SkateSessionPaymentAmount(models.Model):
     class Meta:
         verbose_name = "Custom Dues Billing Amount"
