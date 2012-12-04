@@ -4,6 +4,8 @@ from django.db.models.signals import post_save
 
 from django_localflavor_us.models import USStateField, USPostalCodeField, PhoneNumberField
 
+from django.contrib import admin
+
 # Requires django 1.5 for one-to-one User Profile extensions
 # https://docs.djangoproject.com/en/1.5/topics/auth/#storing-additional-information-about-users
 #
@@ -32,12 +34,126 @@ class Skater(models.Model):
 
 
 
-
 def create_skater_profile(sender, instance, created, **kwargs):
     if created:
         Skater.objects.create(user=instance)
 
 post_save.connect(create_skater_profile, sender=User)
 
+"""
+" Skater Status model
+"   Provides default values for billing and describing the status of that Skater.
+"   Helps provide us with an idea if the skater is active.
+"""
+class SkaterStatus(models.Model):
+    class Meta:
+        verbose_name = "Skater Status"
+        verbose_name_plural = "Skater Statuses"
+
+    name = models.CharField(
+        "Status Name", 
+        max_length=50, 
+        help_text = "Example: 'injured', 'active', 'administion', 'social'",
+    )
+
+    dues_amount = models.DecimalField(
+        "Dues Amount", 
+        max_digits = 10,
+        decimal_places = 2,
+        default = 0.00,
+        help_text = "Dollar amount that we should bill these users for each billing period.",
+    )
+
+    def __unicode__(self):
+        return self.name
+
+
+
+class SkateSession(models.Model):
+    class Meta:
+        verbose_name = "Skating Session"
+        verbose_name_plural = "Skating Sessions"
+
+    name = models.CharField(
+        "Session Name", 
+        max_length = 50,
+        help_text = "Name of the session. Keep it simple, examples: 'Fall 2012', 'Summer 2013'")
+
+    start_date = models.DateField(
+        "Start Date",
+        help_text = "Start date for this session. Used for informational purposes only.",
+    )
+    end_date = models.DateField(
+        "End Date",
+        help_text = "End date for this session. Used for informational purposes only.",
+    )
+
+    def __unicode__(self):
+        return self.name
+
+
+class SkateSessionPaymentSchedule(models.Model):
+    class Meta:
+        verbose_name = "Dues Billing Date"
+        verbose_name_plural = "Dues Billing Dates"
+
+    session = models.ForeignKey(
+        SkateSession,
+        help_text = "Select the Session that this billing period is associated with.",
+    )
+    
+    bill_date = models.DateField(
+        "Due Date",
+        help_text = "The date that payments are due for this billing period. We will attempt to charge credit cards on this date.",
+    )
+
+    start_date = models.DateField(
+        "Start Date",
+        help_text = "Start date for this billing period. This date will show up on their receipt.",
+    )
+
+    end_date = models.DateField(
+        "End Date",
+        help_text = "End date for this billing period. This date will show up on their receipt.",
+    )
+
+    dues_amounts = models.ManyToManyField(
+        SkaterStatus, 
+        through='SkateSessionPaymentAmount',
+    )
+
+class SkateSessionPaymentAmount(models.Model):
+    class Meta:
+        verbose_name = "Custom Dues Billing Amount"
+        verbose_name_plural = "Custom Dues Billing Amounts"
+
+    status = models.ForeignKey(SkaterStatus)
+    
+    dues_amount = models.DecimalField(
+        "Custom Dues Amount", 
+        max_digits=10, 
+        decimal_places=2,
+        help_text = "The amount we should bill Skaters matching this status for the billing period specified above.",
+    )
+
+    schedule = models.ForeignKey(SkateSessionPaymentSchedule)
+
+
+
+"""
+" Django Admin settings
+"""
+
+
+class SkateSessionPaymentAmountInline(admin.TabularInline):
+    model = SkateSessionPaymentAmount
+
+class SkateSessionPaymentScheduleAdmin(admin.ModelAdmin):
+    inlines = (SkateSessionPaymentAmountInline,)
+
+
+admin.site.register(SkaterStatus)
+admin.site.register(SkateSessionPaymentSchedule, SkateSessionPaymentScheduleAdmin)
+admin.site.register(SkateSession)
 
 
