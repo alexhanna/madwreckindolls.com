@@ -3,9 +3,24 @@ from django.contrib.auth.models import User
 from django.db.models.signals import pre_save
 from django.contrib import admin
 
+"""
+
+TODO
+
+- Add some hidden fields to track the version that the user is
+agreeing to and submitting on the registration form
+
+- Maybe plug into the forms / models a bit smarter
+
+- Set active LegalDocument using a signal
+
+"""
+
+
 # A binder of all the versions of a certain legal document
 class LegalDocumentBinder(models.Model):
     document_name = models.CharField("Document", max_length=50)
+    short_name = models.CharField("Short Document Name", max_length=25)
 
     def __unicode__(self):
         return self.document_name
