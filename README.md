@@ -6,6 +6,10 @@
 
 ### Required packages
 
-##### django-localflavor-us
+We're currently on the bleeding edge:
 
-I'm not completely sure about how to install this with pip yet.
+* pip install git+https://github.com/django/django.git
+* pip install git+https://github.com/django/django-localflavor-us.git
+* pip install git+https://github.com/maraujop/django-crispy-forms.git
+
+### Settings
