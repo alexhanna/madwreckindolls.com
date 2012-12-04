@@ -141,7 +141,7 @@ class LegalForm(forms.Form):
         widget = forms.Textarea(),
         required = False,
         label = "",
-        initial = LegalDocumentBinder.objects.filter(short_name='codeofconduct').get().get_active_version().text,
+        #initial = LegalDocumentBinder.get_active_version_text('codeofconduct'),
     )
     code_of_conduct_agree = forms.BooleanField(
         label = "I agree to the Code of Conduct"
@@ -151,7 +151,7 @@ class LegalForm(forms.Form):
         widget = forms.Textarea(),
         required = False,
         label = "",
-        initial = LegalDocumentBinder.objects.filter(short_name='wftda').get().get_active_version().text,
+        #initial = LegalDocumentBinder.get_active_version_text('wftda'),
     )
     wftda_agree = forms.BooleanField(
         label = "I agree to the WFTDA Release"
@@ -161,10 +161,10 @@ class LegalForm(forms.Form):
         widget = forms.Textarea(),
         required = False,
         label = "",
-        initial = LegalDocumentBinder.objects.filter(short_name='mwd').get().get_active_version().text,
+        #initial = LegalDocumentBinder.get_active_version_text('mwd'),
     )
     mwd_agree = forms.BooleanField(
-        label = "I agree to the Code of Conduct"
+        label = "I agree to the MWD"
     )
     
     
