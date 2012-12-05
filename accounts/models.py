@@ -4,7 +4,6 @@ from django.db.models.signals import post_save
 
 from django_localflavor_us.models import USStateField, USPostalCodeField, PhoneNumberField
 
-from django.contrib import admin
 
 """
 # Requires django 1.5 for one-to-one User Profile extensions

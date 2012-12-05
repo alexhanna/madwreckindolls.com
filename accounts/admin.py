@@ -1,6 +1,5 @@
-"""
-" Django Admin settings
-"""
+from accounts.models import SkaterStatus, SkateSession, SkateSessionPaymentSchedule, SkateSessionPaymentAmount
+from django.contrib import admin
 
 
 class SkateSessionPaymentAmountInline(admin.TabularInline):
