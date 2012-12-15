@@ -4,6 +4,12 @@
 {% block head %}
 {% endblock %}
 
+{% if step %}
+{% block step %}
+<div class="step">Step {{ step }} of 4</div>
+{% endblock %}
+{% endif %}
+
 {% block content %}
 
 {% load crispy_forms_tags %}

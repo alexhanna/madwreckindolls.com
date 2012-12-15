@@ -1,0 +1,159 @@
+{% extends "registration/base.html" %}
+{% load i18n %}
+
+{% block head %}
+<script type="text/javascript" src="https://js.stripe.com/v1/"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.payment_div').click(function() {
+        $('.pm').hide('fast');
+        $('.pm_' + $(this).attr("id")).show('fast');    
+    });
+
+    $('#cc_button').click(function() {
+
+    });
+});
+
+</script>
+<style type="text/css">
+.payment_div {
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px 10px 8px 5px;
+}
+.payment_option {
+    font-size: 20px;
+    margin-right: 8px;
+}
+.pm {
+    margin-top:20px;
+}
+
+.highlight {
+    background: #fdfecb;
+}
+
+</style>
+{% endblock %}
+
+{% if step %}
+{% block step %}
+<div class="step">Step 4 of 4</div>
+{% endblock %}
+{% endif %}
+
+{% block content %}
+
+<div class="skater-info">
+    <span>Active</span> skater dues are <span>$</span>
+</div>
+
+<div class="due-date">
+    Dues must be received by {{ REGISTRATION_DEADLINE|safe }}.
+</div>
+
+
+<div class="payment_div" id="cc">
+    <input class="payment_option" type="radio" name="payment_method" value="cc"> Pay now with a Credit/Debit Card
+</div>
+
+<div class="hide pm pm_cc">
+    <form class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label" for="cc_name">Name on Card</label>
+            <div class="controls">
+                <input type="text" id="cc_name">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="cc_num">Card Number</label>
+            <div class="controls">
+                <input type="text" id="cc_num">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="cc_exp">Expiration</label>
+            <div class="controls">
+                <select id="cc_mon" style="width:auto;">
+                    <option value="">Month</option>
+                    <option value="01">1 - Jan</option>
+                    <option value="02">2 - Feb</option>
+                    <option value="03">3 - Mar</option>
+                    <option value="04">4 - Apr</option>
+                    <option value="05">5 - May</option>
+                    <option value="06">6 - Jun</option>
+                    <option value="07">7- Jul</option>
+                    <option value="08">8 - Aug</option>
+                    <option value="09">9 - Sep</option>
+                    <option value="10">10 - Oct</option>
+                    <option value="11">11 - Nov</option>
+                    <option value="12">12 - Dev</option>
+                </select>
+                <select id="cc_year" style="width:auto;">
+                    <option value="">Year</option>
+                    <option value="2012">2012</option>
+                    <option value="2013">2013</option>
+                    <option value="2014">2014</option>
+                    <option value="2015">2015</option>
+                    <option value="2016">2016</option>
+                    <option value="2017">2017</option>
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="cc_cvc">CVC</label>
+            <div class="controls">
+                <input type="text" id="cc_cvc" style="width:40px;" maxlength="4">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="checkbox" style="margin-left:150px;">
+                <input type="checkbox" id="cc_automatic" style="font-size:20px;">
+                Auto-bill me each month blah blah reasons why its awesome and how it will work
+            </label>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn btn-primary" id="cc_button">Pay Now</button>
+        </div>
+    </form>
+</div>
+
+<div class="payment_div" id="pip">
+    <input class="payment_option" type="radio" name="payment_method" value="pip"> Pay in Person
+</div>
+
+<div class="hide pm pm_pip">
+    <div style="margin:25px 0 0 80px;">
+        {{ REGISTRATION_PIP_INSTRUCTIONS|safe }}
+    </div>
+    <form class="form-horizontal">
+        <input type="hidden" name="payment_method" value="pip">
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Complete Registration</button>
+        </div>
+    </form>
+</div>
+
+<div class="payment_div" id="mail">
+    <input class="payment_option" type="radio" name="payment_method" value="mail"> Mail in Payment
+</div>
+
+<div class="hide pm pm_mail">
+    <div style="margin:25px 0 0 80px;">
+        {{ REGISTRATION_MAIL_INSTRUCTIONS|safe }}
+    </div>
+    <form class="form-horizontal">
+        <input type="hidden" name="payment_method" value="mail">
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Complete Registration</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

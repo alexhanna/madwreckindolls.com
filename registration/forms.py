@@ -93,7 +93,7 @@ class EmergencyForm(forms.Form):
     )
     
     emergency_phone = USPhoneNumberField(
-        label = "Emergency Phone",
+        label = "Emergency Contact Phone",
         required = True,
     )
     
@@ -137,38 +137,18 @@ class EmergencyForm(forms.Form):
 
 class LegalForm(forms.Form):
 
-    code_of_conduct = forms.CharField(
-        widget = forms.Textarea(),
-        required = False,
-        label = "",
-        #initial = LegalDocumentBinder.get_active_version_text('codeofconduct'),
-    )
-    code_of_conduct_agree = forms.BooleanField(
-        label = "I agree to the Code of Conduct"
-    )
-
-    wftda = forms.CharField(
-        widget = forms.Textarea(),
-        required = False,
-        label = "",
-        #initial = LegalDocumentBinder.get_active_version_text('wftda'),
-    )
-    wftda_agree = forms.BooleanField(
-        label = "I agree to the WFTDA Release"
-    )
-
     mwd = forms.CharField(
-        widget = forms.Textarea(),
-        required = False,
-        label = "",
-        #initial = LegalDocumentBinder.get_active_version_text('mwd'),
+            widget = forms.Textarea(),
+            required = False,
+            label = "",
     )
-    mwd_agree = forms.BooleanField(
-        label = "I agree to the MWD"
+
+    code_of_conduct_agree = forms.BooleanField(
+        label = "I have read and agree to the Code of Conduct"
     )
-    
-    
+
     def __init__(self, *args, **kwargs):
+        
         self.helper = FormHelper()
         self.helper.html5_required = True
         self.helper.add_input(Button('button', 'Back'))
@@ -176,6 +156,7 @@ class LegalForm(forms.Form):
         self.helper.form_class = 'form-horizontal'
         self.helper.form_method = 'post'
         self.helper.form_action = '?'
+       
         super(LegalForm, self).__init__(*args, **kwargs)
 
 class PaymentForm(forms.Form):
