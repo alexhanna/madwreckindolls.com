@@ -11,7 +11,7 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
-AUTH_PROFILE_MODULE = "accounts.SkaterProfile"
+AUTH_USER_MODEL = 'accounts.Skater'
 
 MANAGERS = ADMINS
 
@@ -129,6 +129,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'crispy_forms',
+    'south',
     
     'legal_headache',
     'accounts',

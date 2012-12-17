@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.db.models.signals import pre_save
 from django.contrib import admin
 
+from mwd import settings
+
 """
 
 TODO
@@ -60,7 +62,7 @@ class LegalDocument(models.Model):
 # Tracks the "I agree" clicks of a user through different versions of a document
 class LegalDocumentSignature(models.Model):
     document = models.ForeignKey(LegalDocument)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     datestamp = models.DateTimeField(auto_now_add = True)
 
 

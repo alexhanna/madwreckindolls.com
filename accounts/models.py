@@ -1,6 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
+from django.contrib.auth.models import UserManager, AbstractBaseUser
 
 from django_localflavor_us.models import USStateField, USPostalCodeField, PhoneNumberField
 from mwd import settings
@@ -12,27 +11,112 @@ from mwd import settings
 #
 # Email address should be equal to the username
 # Email is set in the User model
-#
+# 
+# Useful: http://procrastinatingdev.com/django/using-configurable-user-models-in-django-1-5/
 """
-class Skater(models.Model):
-    user = models.OneToOneField(User)
-    phone = PhoneNumberField()
-    derby_name = models.CharField("Derby Name", max_length=100)
-    derby_number = models.CharField("Derby Number", max_length=50)
+class Skater(AbstractBaseUser):
+    USERNAME_FIELD = 'email'
+    #objects = UserManager
 
-    address1 = models.CharField("Address 1", max_length=50)
-    address2 = models.CharField("Address 2", max_length=50)
-    city = models.CharField("City", max_length=50)
-    state = USStateField()
-    zip = USPostalCodeField()
+    class Meta:
+        verbose_name = "Skater"
+        verbose_name_plural = "Skaters"
     
-    emergency_contact = models.CharField("Contact Name", max_length=100)
-    emergency_phone = PhoneNumberField()
-    emergency_relationship = models.CharField("Contact Relationship", max_length=50)
+    def __unicode__(self):
+        return self.get_full_name()
 
-    insurance_provider = models.CharField("Insurance Provider", max_length=50)
-    hospital = models.CharField("Preferred Hospital", max_length=50)
-    medical_details = models.TextField("Medical Allergies and Other Info")
+    def get_full_name(self):
+        if self.derby_name != '':
+            return self.derby_name + ' (' + self.first_name + ' ' + self.last_name + ')'
+        elif self.first_name != '' or self.last_name != '':
+            return '(' + self.first_name + ' ' + self.last_name + ')'
+        else:
+            return 'Unnamed Skater (no name set)'
+
+    def get_short_name(self):
+        if self.derby_name != '':
+            return self.derby_name
+        elif self.first_name != '':
+            return self.first_name
+        else:
+            return 'Unnamed Skater'
+
+           
+    derby_name = models.CharField(
+        "Derby Name", 
+        max_length = 100,
+        blank = True,
+    )
+
+    derby_number = models.CharField(
+        "Derby Number", 
+        max_length=50,
+        blank = True,
+    )
+
+    phone = PhoneNumberField(
+        blank=True
+    )
+
+    address1 = models.CharField(
+        "Address 1", 
+        max_length = 50,
+        blank = True,
+    )
+
+    address2 = models.CharField(
+        "Address 2", 
+        max_length=50,
+        blank = True,
+    )
+
+    city = models.CharField(
+        "City", 
+        max_length = 50,
+        blank = True,
+    )
+
+    state = USStateField(
+        blank = True,
+    )
+
+    zip = USPostalCodeField(
+        blank = True,
+    )
+    
+    emergency_contact = models.CharField(
+        "Emergency Contact Name", 
+        max_length = 100,
+        blank = True,
+    )
+
+    emergency_phone = PhoneNumberField(
+        "Emergency Contact Phone",
+        blank = True,
+    )
+
+    emergency_relationship = models.CharField(
+        "Emergency Contact Relationship", 
+        max_length=50,
+        blank = True,
+    )
+
+    insurance_provider = models.CharField(
+        "Insurance Provider", 
+        max_length = 50,
+        blank = True,
+    )
+
+    hospital = models.CharField(
+        "Preferred Hospital", 
+        max_length = 50,
+        blank = True,
+    )
+
+    medical_details = models.TextField(
+        "Medical Allergies and Other Info",
+        blank = True,
+    )
 
     balance = models.DecimalField(
         "Account Balance", 
@@ -49,11 +133,8 @@ class Skater(models.Model):
     )
 
 
-def create_skater_profile(sender, instance, created, **kwargs):
-    if created:
-        Skater.objects.create(user=instance)
 
-post_save.connect(create_skater_profile, sender=User)
+
 
 """
 " Skater Status model
@@ -180,7 +261,7 @@ class Invoice(models.Model):
 
 
     skater = models.ForeignKey(
-        Skater,
+        settings.AUTH_USER_MODEL,
     )
 
     invoice_date = models.DateField(
@@ -225,7 +306,7 @@ class Receipt(models.Model):
         return self.skater.derby_name + " - " + self.description + " - $" + str(self.amount)
     
     skater = models.ForeignKey(
-        Skater,
+        settings.AUTH_USER_MODEL,
     )
 
     amount = models.DecimalField(
