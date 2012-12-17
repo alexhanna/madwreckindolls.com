@@ -1,22 +1,48 @@
 from django.db import models
-from django.contrib.auth.models import UserManager, AbstractBaseUser
-
+from django.contrib.auth.models import UserManager, BaseUserManager, AbstractBaseUser
 from django_localflavor_us.models import USStateField, USPostalCodeField, PhoneNumberField
 from mwd import settings
 
 
 """
-# Requires django 1.5 for one-to-one User Profile extensions
-# https://docs.djangoproject.com/en/1.5/topics/auth/#storing-additional-information-about-users
+# Requires django 1.5
 #
 # Email address should be equal to the username
 # Email is set in the User model
 # 
 # Useful: http://procrastinatingdev.com/django/using-configurable-user-models-in-django-1-5/
+#         https://docs.djangoproject.com/en/1.5/topics/auth/#auth-custom-user
 """
+
+class SkaterUserManager(BaseUserManager):
+    def create_user(self, email, password=None):
+        if not email:
+            raise ValueError('Users must have an email address')
+
+        user = self.model(
+            email = SkaterUserManager.normalize_email(email),
+        )
+
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password):
+        user = self.create_user(
+            email,
+            password=password,
+        )
+        user.is_admin = True
+        user.save(using=self._db)
+        return user
+
+
+
+
 class Skater(AbstractBaseUser):
     USERNAME_FIELD = 'email'
-    #objects = UserManager
+    REQUIRED_FIELDS = []
+    objects = SkaterUserManager()
 
     class Meta:
         verbose_name = "Skater"
@@ -41,6 +67,49 @@ class Skater(AbstractBaseUser):
         else:
             return 'Unnamed Skater'
 
+    def has_perm(self, perm, obj=None):
+        "Does the user have a specific permission?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    def has_module_perms(self, app_label):
+        "Does the user have permissions to view the app `app_label`?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    @property
+    def is_staff(self):
+        "Is the user a member of staff?"
+        # Simplest possible answer: All admins are staff
+        return self.is_admin
+
+
+    email = models.EmailField(
+        "Email Address",
+        max_length = 254, 
+        unique = True,
+        db_index = True,
+    )
+
+    is_active = models.BooleanField(
+        default = True
+    )
+
+    is_admin = models.BooleanField(
+        default = False
+    )
+
+    first_name = models.CharField(
+        "First Name",
+        max_length = 100,
+        blank = True,
+    )
+
+    last_name = models.CharField(
+        "Last Name",
+        max_length = 100,
+        blank = True,
+    )
            
     derby_name = models.CharField(
         "Derby Name", 
@@ -123,6 +192,7 @@ class Skater(AbstractBaseUser):
         max_digits=10, 
         decimal_places=2,
         blank = True,
+        default = '0',
     )
 
     payment_preference = models.CharField(
