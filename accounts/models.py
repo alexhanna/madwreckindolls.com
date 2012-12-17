@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 
 from django_localflavor_us.models import USStateField, USPostalCodeField, PhoneNumberField
+from mwd import settings
 
 
 """
@@ -33,6 +34,19 @@ class Skater(models.Model):
     hospital = models.CharField("Preferred Hospital", max_length=50)
     medical_details = models.TextField("Medical Allergies and Other Info")
 
+    balance = models.DecimalField(
+        "Account Balance", 
+        max_digits=10, 
+        decimal_places=2,
+        blank = True,
+    )
+
+    payment_preference = models.CharField(
+        "Payment Preference",
+        max_length = 15,
+        choices = settings.PAYMENT_PREFERENCES,
+        blank = True,
+    )
 
 
 def create_skater_profile(sender, instance, created, **kwargs):
@@ -153,5 +167,92 @@ class SkateSessionPaymentAmount(models.Model):
     )
 
     schedule = models.ForeignKey(SkateSessionPaymentSchedule)
+
+
+
+class Invoice(models.Model):
+    class Meta:
+        verbose_name = "Invoice"
+        verbose_name_plural = "Invoices"
+    
+    def __unicode__(self):
+        return self.skater.derby_name + " - " + self.description + " - $" + str(self.amount)
+
+
+    skater = models.ForeignKey(
+        Skater,
+    )
+
+    invoice_date = models.DateField(
+        "Invoice Date",
+    )
+
+    due_date = models.DateField(
+        "Due Date",
+    )
+    
+    description = models.TextField(
+        "Invoice Description",
+        blank = True,
+    )
+    
+    INVOICE_STATUS_CHOICES = (
+        ("paid", "Paid"),
+        ("unpaid", "Unpaid"),
+        ("cancelled", "Cancelled"),
+    )
+
+    status = models.CharField(
+        "Invoice Status",
+        max_length = "15",
+        choices = INVOICE_STATUS_CHOICES,
+        default = "unpaid",
+    )
+
+    amount = models.DecimalField(
+        "Invoice Total", 
+        max_digits=10, 
+        decimal_places=2,
+    )
+
+
+class Receipt(models.Model):
+    class Meta:
+        verbose_name = "Payment Receipt"
+        verbose_name_plural = "Payment Receipts"
+
+    def __unicode__(self):
+        return self.skater.derby_name + " - " + self.description + " - $" + str(self.amount)
+    
+    skater = models.ForeignKey(
+        Skater,
+    )
+
+    amount = models.DecimalField(
+        "Amount Paid", 
+        max_digits=10, 
+        decimal_places=2,
+    )
+
+    method = models.CharField(
+        "Payment Method",
+        max_length = 15,
+        choices = settings.PAYMENT_METHODS,
+    )
+
+    method_detail = models.CharField(
+        "Payment Details",
+        max_length = 200,
+        blank = True,
+    )
+
+    description = models.TextField(
+        "Receipt Description"
+    )
+    
+    date = models.DateField(
+        "Payment Date",
+    )
+
 
 

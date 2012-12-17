@@ -5,6 +5,8 @@ from legal_headache.models import LegalDocumentBinder, LegalDocument
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Button
+from mwd import settings
+
 
 class PersonalForm(forms.Form):
 
@@ -160,4 +162,26 @@ class LegalForm(forms.Form):
         super(LegalForm, self).__init__(*args, **kwargs)
 
 class PaymentForm(forms.Form):
-    payment_shit = forms.CharField(max_length=100)
+    
+    payment_method = forms.ChoiceField(
+        choices = settings.PAYMENT_PREFERENCES
+    )
+    
+    stripe_token = forms.CharField(
+        max_length = 64,
+        required = False,
+    )
+
+    autobill = forms.BooleanField(
+        required = False,
+    )
+
+    def clean(self):
+        cleaned_data = super(PaymentForm, self).clean()
+
+        ## Stripe token in blank and we're expecting to process a credit card
+        if cleaned_data.get("payment_method") == "cc" and cleaned_data.get("stripe_token") == "":
+            raise forms.ValidationError("Credit card payment type selected but we did not receive a valid credit card token from Stripe.")
+
+        return cleaned_data
+

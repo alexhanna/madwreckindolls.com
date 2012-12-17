@@ -5,6 +5,9 @@
 <script type="text/javascript" src="https://js.stripe.com/v1/"></script>
 <script type="text/javascript">
 $(document).ready(function() {
+
+    Stripe.setPublishableKey('{{ STRIPE_PUBLISHABLE }}');
+
     $('.payment_div').click(function() {
         $('.pm').hide('fast');
         $('.pm_' + $(this).attr("id")).show('fast');    
@@ -12,8 +15,77 @@ $(document).ready(function() {
 
     $('#cc_button').click(function() {
 
+        $(this).attr('disabled', 'disabled').html('Processing....');
+        $('.cc_errors').html('').hide();
+
+        var errors = [];
+
+        // Name on Card
+        if($('#cc_name').val() == '')
+            errors.push("Name on Card is required.");
+
+        // Validate credit card number
+        if(!Stripe.validateCardNumber($('#cc_num').val()))
+            errors.push("Credit Card number appears to be invalid. Please check that it is correct.")
+
+        // Validate expiry dates
+        if($('#cc_month').val() == "")
+            errors.push("Expiry month is required.");
+        if($('#cc_year').val() == "")
+            errors.push("Expiry year is required.");
+
+        // Validate CVC
+        if(!Stripe.validateCVC($('#cc_cvc').val()))
+            errors.push("CVC code is not valid. It's usually the 3 or 4 digit number on the front or back of your card.");
+
+        if(errors.length == 0)
+        {
+            // Attempt to submit the card to stripe
+            Stripe.createToken({
+                number: $('#cc_num').val(),
+                cvc: $('#cc_cvc').val(),
+                exp_month: $('#cc_month').val(),
+                exp_year: $('#cc_year').val()
+            }, stripeResponseHandler);
+        }
+        else
+        {
+            // Validation errors
+            $('.cc_errors').show().html('There appears to be a problem with the credit card:<ul>');
+
+            for(var i = 0; i < errors.length; i++)
+                $('.cc_errors').append('<li>' + errors[i] + '</li>');
+
+            $('.cc_errors').append('</ul>');
+
+            $(this).html('Try Again - Pay Now').removeAttr('disabled');
+        }
     });
 });
+
+function stripeResponseHandler(status, response) 
+{
+    if (response.error) 
+    {
+        $('.cc_errors').show().html('There appears to be a problem processing your credit card:<ul>');
+        $('.cc_errors').append('<li>' + response.error.message + '</li>');
+        $('.cc_errors').append('</ul>');
+        $('#cc_button').html('Try Again - Pay Now').removeAttr('disabled');
+    }        
+    else 
+    {
+        $('#cc_button').html('Almost done....');
+
+        // Copy automatic billing checkbox
+        if($('#cc_automatic').is(":checked"))
+            $('#autobill').val("1");
+
+        $('#stripe_token').val(response.id);
+
+        $('#stripe_form').submit();
+    }
+}
+
 
 </script>
 <style type="text/css">
@@ -54,11 +126,26 @@ $(document).ready(function() {
 </div>
 
 
+{% if error %}
+<!-- general error message -->
+<div class="alert alert-error">
+    {% if error %}{{ error }}{% endif %}
+</div>
+{% endif %}
+
+
+<!-- CREDIT CARD PAYMENT -->
+
 <div class="payment_div" id="cc">
     <input class="payment_option" type="radio" name="payment_method" value="cc"> Pay now with a Credit/Debit Card
 </div>
 
-<div class="hide pm pm_cc">
+<div class="{% if not cc_error %}hide{% endif %} pm pm_cc">
+
+    <!-- credit card error messages -->
+    <div class="cc_errors {% if not cc_error %}hide{% endif %} alert alert-error">{% if cc_error %}{{ cc_error }}{% endif %}</div>
+
+    <!-- credit card form -->
     <form class="form-horizontal">
         <div class="control-group">
             <label class="control-label" for="cc_name">Name on Card</label>
@@ -69,13 +156,13 @@ $(document).ready(function() {
         <div class="control-group">
             <label class="control-label" for="cc_num">Card Number</label>
             <div class="controls">
-                <input type="text" id="cc_num">
+                <input type="text" id="cc_num" maxlength="16" style="width:140px;">
             </div>
         </div>
         <div class="control-group">
             <label class="control-label" for="cc_exp">Expiration</label>
             <div class="controls">
-                <select id="cc_mon" style="width:auto;">
+                <select id="cc_month" style="width:auto;">
                     <option value="">Month</option>
                     <option value="01">1 - Jan</option>
                     <option value="02">2 - Feb</option>
@@ -122,7 +209,19 @@ $(document).ready(function() {
             <button type="button" class="btn btn-primary" id="cc_button">Pay Now</button>
         </div>
     </form>
+
+    <!-- This form is the one that actually submits in the event that saving the card to stripe is successful. -->
+    <form action="{% url 'registration.views.payment' %}" method="post" id="stripe_form">
+        {% csrf_token %}
+        <input type="hidden" name="payment_method" id="payment_method" value="cc">
+        <input type="hidden" name="stripe_token" id="stripe_token" value="">
+        <input type="hidden" name="autobill" id="autobill" value="">
+    </form>
+
 </div>
+
+
+<!-- PAY IN PERSON -->
 
 <div class="payment_div" id="pip">
     <input class="payment_option" type="radio" name="payment_method" value="pip"> Pay in Person
@@ -132,13 +231,18 @@ $(document).ready(function() {
     <div style="margin:25px 0 0 80px;">
         {{ REGISTRATION_PIP_INSTRUCTIONS|safe }}
     </div>
-    <form class="form-horizontal">
+    <form action="{% url 'registration.views.payment' %}" method="post" class="form-horizontal">
+        {% csrf_token %}
         <input type="hidden" name="payment_method" value="pip">
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Complete Registration</button>
         </div>
     </form>
 </div>
+
+
+
+<!-- PAY BY MAIL -->
 
 <div class="payment_div" id="mail">
     <input class="payment_option" type="radio" name="payment_method" value="mail"> Mail in Payment
@@ -148,7 +252,8 @@ $(document).ready(function() {
     <div style="margin:25px 0 0 80px;">
         {{ REGISTRATION_MAIL_INSTRUCTIONS|safe }}
     </div>
-    <form class="form-horizontal">
+    <form action="{% url 'registration.views.payment' %}" method="post" class="form-horizontal">
+        {% csrf_token %}
         <input type="hidden" name="payment_method" value="mail">
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Complete Registration</button>
