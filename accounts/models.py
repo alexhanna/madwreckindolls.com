@@ -202,6 +202,9 @@ class Skater(AbstractBaseUser):
         blank = True,
     )
 
+    account_create_date = models.DateTimeField(auto_now_add = True)
+    account_modify_date = models.DateTimeField(auto_now = True)
+
 
 
 
@@ -272,6 +275,10 @@ class SkateSessionPaymentSchedule(models.Model):
     class Meta:
         verbose_name = "Dues Billing Date"
         verbose_name_plural = "Dues Billing Dates"
+        ordering = ["start_date"]
+
+    def __unicode__(self):
+        return self.session.name + ' - ' + str(self.start_date) + ' to ' + str(self.end_date)
 
     session = models.ForeignKey(
         SkateSession,
@@ -321,6 +328,8 @@ class SkateSessionPaymentAmount(models.Model):
 
 
 
+
+
 class Invoice(models.Model):
     class Meta:
         verbose_name = "Invoice"
@@ -332,6 +341,10 @@ class Invoice(models.Model):
 
     skater = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+    )
+
+    schedule = models.ForeignKey(
+        SkateSessionPaymentSchedule,
     )
 
     invoice_date = models.DateField(

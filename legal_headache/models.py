@@ -27,10 +27,15 @@ class LegalDocumentBinder(models.Model):
     def __unicode__(self):
         return self.document_name
 
+
+    def get_active_version(self):
+        return LegalDocument.objects.filter(document_group__exact = self.id).filter(active=True)[0]
+
+
     # Returns the active version of the legal document
     def get_active_version_text(self):
-
         document = LegalDocument.objects.filter(document_group__exact = self.id).filter(active=True)
+
         if len(document) == 1:
             return document[0].text
 
@@ -64,7 +69,7 @@ class LegalDocumentSignature(models.Model):
     document = models.ForeignKey(LegalDocument)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     datestamp = models.DateTimeField(auto_now_add = True)
-
+    ip = models.IPAddressField()
 
 admin.site.register(LegalDocument)
 admin.site.register(LegalDocumentBinder)

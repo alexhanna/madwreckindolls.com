@@ -6,7 +6,9 @@ from django.contrib.auth.models import User
 from registration.forms import PersonalForm, EmergencyForm, LegalForm, PaymentForm
 from legal_headache.models import LegalDocumentBinder, LegalDocument
 from mwd import settings
-
+from mwd.utilities import get_client_ip
+from accounts.models import Skater, SkateSession
+from legal_headache.models import LegalDocumentSignature
 
 # If pre-registration is going on, only allow existing accounts to access the page for pre-registration
 # Returns False if the user is ineligible for pre-reg
@@ -138,16 +140,68 @@ def payment(request):
                 data["cc_error"] = "Could not change your card"
 
             if create_account:
-                if request.session['skater']:
+                if request.session.get("skater"):
                     pass
 
                 # Here we'll actually create the account if it's a new one:
                 else:
-                    user = User.objects.create_user(email, email, password)
-                    user
+                    personal_data = request.session['personal_details'].cleaned_data
+                    emergency_data = request.session['emergency_info'].cleaned_data
+                    legal_data = request.session['legal_stuff'].cleaned_data
+                    
+                    skater = Skater.objects.create_user(personal_data['email'], "skates")
+                    
+                    skater.first_name = personal_data['first_name']
+                    skater.last_name = personal_data['last_name']
+                    skater.derby_name = personal_data['derby_name']
+                    skater.derby_number = personal_data['derby_number']
+                    skater.address1 = personal_data['address1']
+                    skater.address2 = personal_data['address2']
+                    skater.city = personal_data['city']
+                    skater.state = personal_data['state']
+                    skater.zip = personal_data['zip']
+                    skater.phone = personal_data['phone']
+
+                    skater.emergency_contact = emergency_data['emergency_contact']
+                    skater.emergency_relationship = emergency_data['emergency_relationship']
+                    skater.emergency_phone = emergency_data['emergency_phone']
+                    skater.insurance_provider = emergency_data['insurance_company']
+                    skater.hospital = emergency_data['hospital_preference']
+                    skater.medical_details = emergency_data['allergies']
+
+                    skater.save()
+
+                    "Save legal signature"
+                    mwd_binder = LegalDocumentBinder.objects.get(short_name__exact = "mwd")
+                    if mwd_binder:
+                        document = mwd_binder.get_active_version()
+                        if document:
+                            sig = LegalDocumentSignature(user=skater, document=document, ip=get_client_ip(request))
+                            sig.save()
+                        "else:"
+                        "ERROR: No active document version."
+                    "else:"
+                    "ERROR: No binder with that name."
+                    
+
+                    "Create Invoice"
+                    "Get registration skate session"
+                    skate_session = SkateSession.objects.get(name__exact = settings.REGISTRATION_SESSION_NAME)
+                    #if skate_session:
+                    #    "Get the first billing date for this session"
+                    #    billing_period = SkateSessionPaymentSchedule.objects.filter(session=skate_session
+                        
+
+                    "else:"
+                    "ERROR: No session matches REGISTRATION_SESSION_NAME"
+                    return HttpResponseRedirect(reverse('registration.views.done'))
 
 
+
+                    
+                    
         else:
+            "Invalid form - form.is_valid() failed"
             data["error"] = "Could not create your account for some reason.... Try again and email us if it doesn't work."
 
         if create_account:
@@ -157,3 +211,5 @@ def payment(request):
     return render(request, 'registration/payment-registration-form.html', data )
     
 
+def done(request):
+    return render(request, 'registration/done.html', {} )
