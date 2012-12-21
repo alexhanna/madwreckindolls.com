@@ -166,6 +166,7 @@ def payment(request):
                     skater.emergency_contact = emergency_data['emergency_contact']
                     skater.emergency_relationship = emergency_data['emergency_relationship']
                     skater.emergency_phone = emergency_data['emergency_phone']
+                    skater.wftda_number = emergency_data['wftda_number']
                     skater.insurance_provider = emergency_data['insurance_company']
                     skater.hospital = emergency_data['hospital_preference']
                     skater.medical_details = emergency_data['allergies']

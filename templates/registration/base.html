@@ -157,6 +157,16 @@ h1 {
     margin-bottom: 50px;
 }
 
+/* STEP TWO */
+
+#div_id_wftda_confirm {
+    margin-top: 60px;
+}
+
+#div_id_insurance_company {
+    margin-top: 60px;
+}
+
 
 /* STEP FOUR */
 
@@ -183,7 +193,20 @@ h1 {
 
 $(document).ready(function() {
     $('#button-id-button').click(function() { window.history.go(-1) });
+
+    if($('#div_id_wftda_confirm')) {
+        // Select YES if WFTDA number is populated.
+        if($('#div_id_wftda_number').val() != '')
+            $('input:radio[name="wftda_confirm"]').filter('[value="yes"]').attr('checked', true);
+
+        $('input:radio[name="wftda_confirm"]').click(function() {
+            $('#id_wftda_number').focus();
+        });
+    }
+
+    // Legal form textarea
     $('#id_mwd').attr("readonly", "readonly");
+
 });
 
 </script>

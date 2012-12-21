@@ -5,6 +5,13 @@ from datetime import datetime
 
 from mwd import settings
 
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ["^django_localflavor_us\.models\.USStateField"])
+add_introspection_rules([], ["^django_localflavor_us\.models\.USPostalCodeField"])
+add_introspection_rules([], ["^django_localflavor_us\.models\.PhoneNumberField"])
+
+
+
 
 """
 " Skater Status model
@@ -198,6 +205,13 @@ class Skater(AbstractBaseUser):
         "Emergency Contact Relationship", 
         max_length=50,
         blank = True,
+    )
+
+    wftda_number = models.CharField(
+        "WFTDA Number",
+        max_length = 50,
+        blank = True,
+        help_text = "WFTDA Insurance Number",
     )
 
     insurance_provider = models.CharField(

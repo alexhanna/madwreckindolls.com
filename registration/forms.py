@@ -95,7 +95,7 @@ class EmergencyForm(forms.Form):
     )
     
     emergency_phone = USPhoneNumberField(
-        label = "Emergency Contact Phone",
+        label = "Emergency Contact Phone Number",
         required = True,
     )
     
@@ -103,6 +103,22 @@ class EmergencyForm(forms.Form):
         label = "Emergency Contact Relationship",
         max_length = 100,
         required = True,
+    )
+
+    wftda_confirm = forms.ChoiceField(
+        label = "Do you have a WFTDA insurance number?",
+        choices = (
+            ('yes', "Yes"), 
+            ('no', "No")
+        ),
+        widget = forms.RadioSelect,
+    )
+
+    wftda_number = forms.CharField(
+        label = "WFTDA Number",
+        max_length = 50,
+        required = False,
+        help_text = "If you know your WFTDA number, enter it here. If you don't, no big deal.",
     )
 
     insurance_company = forms.CharField(
