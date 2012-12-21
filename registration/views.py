@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from accounts.models import Skater, SkateSession, SkateSessionPaymentSchedule, Invoice, Receipt
+from accounts.models import Skater, SkaterStatus, SkateSession, SkateSessionPaymentSchedule, Invoice, Receipt
 from registration.forms import PersonalForm, EmergencyForm, LegalForm, PaymentForm
 from registration.email import send_registration_email
 from legal_headache.models import LegalDocumentBinder, LegalDocument, LegalDocumentSignature
@@ -128,6 +128,19 @@ def payment(request):
              'REGISTRATION_MAIL_INSTRUCTIONS' : settings.REGISTRATION_MAIL_INSTRUCTIONS, 
              'STRIPE_PUBLISHABLE' : settings.STRIPE_PUBLISHABLE, }
 
+    skate_session = SkateSession.objects.get(name__exact = settings.REGISTRATION_SESSION_NAME)
+    if skate_session:
+        billing_period = SkateSessionPaymentSchedule.objects.filter(session=skate_session)[0:1].get()
+        if billing_period:
+            if request.session.get("skater"):
+                data['dues_amount'] = billing_period.get_dues_amount(status=request.session.get("skater").status)
+            else:
+                data['dues_amount'] = billing_period.get_dues_amount(status=SkaterStatus.objects.get(name__exact = "active"))
+        else:
+            data['dues_amount'] = "0.00? No billing period set."
+    else:
+        data['dues_amount'] = "0.00? No skate sesison set."
+
     if request.method == 'POST':
         create_account = False
         form = PaymentForm(request.POST)
@@ -188,10 +201,9 @@ def payment(request):
 
                     "Create Invoice"
                     "Get registration skate session"
-                    skate_session = SkateSession.objects.get(name__exact = settings.REGISTRATION_SESSION_NAME)
                     if skate_session:
                         "Get the first billing date for this session"
-                        billing_period = SkateSessionPaymentSchedule.objects.filter(session=skate_session)
+                        billing_period = SkateSessionPaymentSchedule.objects.filter(session=skate_session)[0:1].get()
                         if billing_period:
                             "Billing period is sorted automatically by date. Create an invoice attached to these attributes."
                             invoice = generate_invoice(skater, skate_session)

@@ -327,19 +327,18 @@ class SkateSessionPaymentSchedule(models.Model):
     )
 
     """
-    " Get the dues amount for this billing period
+    " Get the dues amount for this billing period by skater OR status
     " If a custom amount is set for their status this billing period, use that.
     " Otherwise default to the value set for the SkaterStatus value
     """
-    def get_dues_amount(self, skater):
-        amount = False
-        for dues_amount in self.dues_amounts:
-            if dues_amount.status == skater.status:
-                return dues_amount.dues_amount
+    def get_dues_amount(self, skater=False, status=False):
+        if skater:
+            status = skater.status
 
-        return skater.status.dues_amount
-
-
+        try:
+            return SkateSessionPaymentAmount.objects.get(schedule=self, status=status).dues_amount
+        except SkateSessionPaymentAmount.DoesNotExist:
+            return status.dues_amount
 
 
 """
