@@ -1,9 +1,5 @@
-<html style="margin:0;padding:0;">
-<body>
-<div style="background-color:#eaeaea;margin:0;padding:0;">
-    <div style="height:18px;background-color:#35E5F4;"></div>
-    <div style="height:18px;background-color:#F9FC69;box-shadow:2px 5px 6px #888;"></div>
-    <div style="margin: 0 auto 0 auto;padding: 20px;background-color:white;width:600px;font-family: Arial, sans-serif;border-left: 1px solid #aeaeae; border-right: 1px solid #aeaeae;">
+{% extends "emails/base.html" %}
+{% block content %}
 <br>
 Hello {{ skater_short_name }},<br>
 <br>
@@ -41,28 +37,5 @@ Mad Wreckin' Dolls<br>
 <a href="mailto:madwreckindolls@gmail.com">madwreckindolls@gmail.com</a><br>
 <br>
 
-    </div>
-</div>
+{% endblock %}
 
-<div style="height:18px;background-color:#F9FC69;"></div>
-<div style="height:18px;background-color:#35E5F4;"></div>
-<div style="font-family:monospace;font-size:11px;margin:0 auto 0 auto;line-height:95%;width:250px;">
-<pre>   THE MWD SITE ROBOT         __
-  THANKS YOU FOR             \&gt; )
- YOUR ATTENTION              /_/
-                      ____ /\_)
-                     /''__Y /
-                     \(&gt;66&lt;/
-                      /\_\_)
-                    _/     \__
-                   (_\/\      \
-                 __/ /  &gt;___'_/_ _
-                 \_ /  (_   _/  \_)
-                   U     \_(_)___/_\
-                           \ \_   (_\___
-                          (oooo/    \___)
-                                     oooo
-</pre>
-</div>
-</body>
-</html>
