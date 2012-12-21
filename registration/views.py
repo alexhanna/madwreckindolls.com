@@ -191,11 +191,11 @@ def payment(request):
                     if skate_session:
                         "Get the first billing date for this session"
                         billing_period = SkateSessionPaymentSchedule.objects.filter(session=skate_session)
-                        #if billing_period:
-                        #    "Billing period is sorted automatically by date. Create an invoice attached to these attributes."
-                        #    #invoice = billing_period.generate_invoice(skater)
-                        #    #if paid by credit card:
-                        #    #    invoice.paid()
+                        if billing_period:
+                            "Billing period is sorted automatically by date. Create an invoice attached to these attributes."
+                            invoice = generate_invoice(skater, skate_session)
+                            #if paid by credit card:
+                            #    invoice.paid()
                     "else:"
                     "ERROR: No session matches REGISTRATION_SESSION_NAME"
 

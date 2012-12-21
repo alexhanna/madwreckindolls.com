@@ -3,6 +3,37 @@ from django.contrib.auth.models import UserManager, BaseUserManager, AbstractBas
 from django_localflavor_us.models import USStateField, USPostalCodeField, PhoneNumberField
 from mwd import settings
 
+from datetime import datetime
+
+
+"""
+" Skater Status model
+"   Provides default values for billing and describing the status of that Skater.
+"   Helps provide us with an idea if the skater is active.
+"""
+class SkaterStatus(models.Model):
+    class Meta:
+        verbose_name = "Skater Status"
+        verbose_name_plural = "Skater Statuses"
+    
+    def __unicode__(self):
+        return self.name
+
+
+    name = models.CharField(
+        "Status Name", 
+        max_length=50, 
+        help_text = "Example: 'injured', 'active', 'administion', 'social'",
+    )
+
+    dues_amount = models.DecimalField(
+        "Dues Amount", 
+        max_digits = 10,
+        decimal_places = 2,
+        default = 0.00,
+        help_text = "Dollar amount that we should bill these users for each billing period.",
+    )
+
 
 """
 # Requires django 1.5
@@ -35,7 +66,6 @@ class SkaterUserManager(BaseUserManager):
         user.is_admin = True
         user.save(using=self._db)
         return user
-
 
 
 
@@ -202,40 +232,17 @@ class Skater(AbstractBaseUser):
         blank = True,
     )
 
+    status = models.ForeignKey(
+        SkaterStatus,
+        default = None,
+        blank = True,
+        null = True,
+    )
+
     account_create_date = models.DateTimeField(auto_now_add = True)
     account_modify_date = models.DateTimeField(auto_now = True)
 
 
-
-
-
-"""
-" Skater Status model
-"   Provides default values for billing and describing the status of that Skater.
-"   Helps provide us with an idea if the skater is active.
-"""
-class SkaterStatus(models.Model):
-    class Meta:
-        verbose_name = "Skater Status"
-        verbose_name_plural = "Skater Statuses"
-    
-    def __unicode__(self):
-        return self.name
-
-
-    name = models.CharField(
-        "Status Name", 
-        max_length=50, 
-        help_text = "Example: 'injured', 'active', 'administion', 'social'",
-    )
-
-    dues_amount = models.DecimalField(
-        "Dues Amount", 
-        max_digits = 10,
-        decimal_places = 2,
-        default = 0.00,
-        help_text = "Dollar amount that we should bill these users for each billing period.",
-    )
 
 
 
@@ -285,7 +292,7 @@ class SkateSessionPaymentSchedule(models.Model):
         help_text = "Select the Session that this billing period is associated with.",
     )
     
-    bill_date = models.DateField(
+    due_date = models.DateField(
         "Due Date",
         help_text = "The date that payments are due for this billing period. We will attempt to charge credit cards on this date.",
     )
@@ -304,6 +311,14 @@ class SkateSessionPaymentSchedule(models.Model):
         SkaterStatus, 
         through='SkateSessionPaymentAmount',
     )
+
+    def get_dues_amount(self, skater):
+        amount = False
+        for dues_amount in self.dues_amounts:
+            if dues_amount.status == skater.status:
+                return dues_amount.dues_amount
+
+
 
 
 """
@@ -329,7 +344,6 @@ class SkateSessionPaymentAmount(models.Model):
 
 
 
-
 class Invoice(models.Model):
     class Meta:
         verbose_name = "Invoice"
@@ -337,8 +351,7 @@ class Invoice(models.Model):
     
     def __unicode__(self):
         return self.skater.derby_name + " - " + self.description + " - $" + str(self.amount)
-
-
+    
     skater = models.ForeignKey(
         settings.AUTH_USER_MODEL,
     )
@@ -378,6 +391,22 @@ class Invoice(models.Model):
         max_digits=10, 
         decimal_places=2,
     )
+
+
+def generate_invoice(skater, schedule):
+    invoice = Invoice.objects.create(
+                                skater = skater,
+                                schedule = schedule,
+                                invoice_date = datetime.now(),
+                                due_date = schedule.due_date,
+                                description = "Dues Payment - " + schedule,
+                                amount = schedule.get_dues_amount(skater)
+                            )
+    
+    skater.balance += invoice.amount
+    skater.save()
+
+    return invoice
 
 
 class Receipt(models.Model):
