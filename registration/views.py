@@ -1,14 +1,15 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-
 from django.contrib.auth.models import User
+
+from accounts.models import Skater, SkateSession, SkateSessionPaymentSchedule, Invoice, Receipt
 from registration.forms import PersonalForm, EmergencyForm, LegalForm, PaymentForm
-from legal_headache.models import LegalDocumentBinder, LegalDocument
+from registration.email import send_registration_email
+from legal_headache.models import LegalDocumentBinder, LegalDocument, LegalDocumentSignature
 from mwd import settings
 from mwd.utilities import get_client_ip
-from accounts.models import Skater, SkateSession
-from legal_headache.models import LegalDocumentSignature
+
 
 # If pre-registration is going on, only allow existing accounts to access the page for pre-registration
 # Returns False if the user is ineligible for pre-reg
@@ -35,8 +36,8 @@ def load_pre_reg(request):
 # STEP ONE
 # Personal information - Name, address
 def personal_details(request):
-    if not can_pre_reg:
-        return render(request, 'registration/pre-reg-only-sorry.html', {})
+    #if not can_pre_reg:
+    #return render(request, 'registration/pre-reg-only-sorry.html', {})
 
     if request.method == 'POST':
         form = PersonalForm(request.POST)
@@ -187,18 +188,24 @@ def payment(request):
                     "Create Invoice"
                     "Get registration skate session"
                     skate_session = SkateSession.objects.get(name__exact = settings.REGISTRATION_SESSION_NAME)
-                    #if skate_session:
-                    #    "Get the first billing date for this session"
-                    #    billing_period = SkateSessionPaymentSchedule.objects.filter(session=skate_session
-                        
-
+                    if skate_session:
+                        "Get the first billing date for this session"
+                        billing_period = SkateSessionPaymentSchedule.objects.filter(session=skate_session)
+                        #if billing_period:
+                        #    "Billing period is sorted automatically by date. Create an invoice attached to these attributes."
+                        #    #invoice = billing_period.generate_invoice(skater)
+                        #    #if paid by credit card:
+                        #    #    invoice.paid()
                     "else:"
                     "ERROR: No session matches REGISTRATION_SESSION_NAME"
-                    return HttpResponseRedirect(reverse('registration.views.done'))
 
-
-
+                    registered_skater = Skater.objects.get(pk=skater.id)
                     
+                    send_registration_email(skate_session, registered_skater)
+
+                    #request.session.flush()
+
+                    return HttpResponseRedirect(reverse('registration.views.done'))
                     
         else:
             "Invalid form - form.is_valid() failed"
