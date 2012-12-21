@@ -1,9 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import UserManager, BaseUserManager, AbstractBaseUser
 from django_localflavor_us.models import USStateField, USPostalCodeField, PhoneNumberField
-from mwd import settings
-
 from datetime import datetime
+
+from mwd import settings
 
 
 """
@@ -36,13 +36,13 @@ class SkaterStatus(models.Model):
 
 
 """
-# Requires django 1.5
-#
-# Email address should be equal to the username
-# Email is set in the User model
-# 
-# Useful: http://procrastinatingdev.com/django/using-configurable-user-models-in-django-1-5/
-#         https://docs.djangoproject.com/en/1.5/topics/auth/#auth-custom-user
+" Requires django 1.5
+"
+" Email address should be equal to the username
+" Email is set in the User model
+" 
+" Useful: http://procrastinatingdev.com/django/using-configurable-user-models-in-django-1-5/
+"         https://docs.djangoproject.com/en/1.5/topics/auth/#auth-custom-user
 """
 
 class SkaterUserManager(BaseUserManager):
@@ -312,11 +312,18 @@ class SkateSessionPaymentSchedule(models.Model):
         through='SkateSessionPaymentAmount',
     )
 
+    """
+    " Get the dues amount for this billing period
+    " If a custom amount is set for their status this billing period, use that.
+    " Otherwise default to the value set for the SkaterStatus value
+    """
     def get_dues_amount(self, skater):
         amount = False
         for dues_amount in self.dues_amounts:
             if dues_amount.status == skater.status:
                 return dues_amount.dues_amount
+
+        return skater.status.dues_amount
 
 
 
@@ -343,6 +350,9 @@ class SkateSessionPaymentAmount(models.Model):
 
 
 
+"""
+" Invoice for dues
+"""
 
 class Invoice(models.Model):
     class Meta:
@@ -393,6 +403,11 @@ class Invoice(models.Model):
     )
 
 
+"""
+" Generate an invoice
+" Create an invoice for a skater during a specified scheduling period.
+" schedule.get_dues_amount will automatically determine the amount that should be billed.
+"""
 def generate_invoice(skater, schedule):
     invoice = Invoice.objects.create(
                                 skater = skater,
@@ -408,6 +423,12 @@ def generate_invoice(skater, schedule):
 
     return invoice
 
+
+"""
+" Receipts for Skaters
+" Keep a record of transactions for users
+" If a Skater pays by credit card, we should email them a receipt
+"""
 
 class Receipt(models.Model):
     class Meta:
