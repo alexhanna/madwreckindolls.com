@@ -1,6 +1,6 @@
 from django_localflavor_us.forms import USPhoneNumberField, USZipCodeField
 from django_localflavor_us.us_states import STATE_CHOICES
-from legal_headache.models import LegalDocumentBinder, LegalDocument
+from legal.models import LegalDocumentBinder, LegalDocument
 
 from django import forms
 from crispy_forms.helper import FormHelper

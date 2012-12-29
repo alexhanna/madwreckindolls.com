@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from accounts.models import Skater, SkaterStatus, SkateSession, SkateSessionPaymentSchedule, Invoice, Receipt
 from registration.forms import PersonalForm, EmergencyForm, LegalForm, PaymentForm
 from registration.email import send_registration_email
-from legal_headache.models import LegalDocumentBinder, LegalDocument, LegalDocumentSignature
+from legal.models import LegalDocumentBinder, LegalDocument, LegalDocumentSignature
 from mwd import settings
 from mwd.utilities import get_client_ip
 
