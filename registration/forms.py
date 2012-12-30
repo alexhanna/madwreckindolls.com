@@ -139,7 +139,7 @@ class EmergencyForm(forms.Form):
         widget = forms.Textarea(),
         label = "Allergies and Medical Information",
         required = True,
-        help_text = "Will latex kill you? If so, we should know.",
+        help_text = "Will latex kill you? If so, we should know. If not, just tell us 'none'.",
     )
     
     def __init__(self, *args, **kwargs):

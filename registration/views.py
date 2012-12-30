@@ -73,7 +73,24 @@ def personal_details(request):
         try:
             form = request.session['personal_details']
         except KeyError:
-            form = PersonalForm()
+            try:
+                skater = request.session['skater']
+                initial_data = {
+                    'derby_name': skater.derby_name,
+                    'derby_number': skater.derby_number,
+                    'first_name': skater.first_name,
+                    'last_name': skater.last_name,
+                    'address1': skater.address1,
+                    'address2': skater.address2,
+                    'city': skater.city,
+                    'state': skater.state,
+                    'zip': skater.zip,
+                    'phone': skater.phone,
+                    'email': skater.email,
+                }
+            except KeyError:
+                initial_data = {}
+            form = PersonalForm(initial_data)
 
     return render(request, 'registration/basic-registration-form.html', { 'form': form, 'step': 1, 'step_info': 'Skater Information', })
     
@@ -150,7 +167,15 @@ def emergency_info(request):
         try:
             form = request.session['emergency_info']
         except KeyError:
-            form = EmergencyForm()
+            initial_data = {}
+            try:
+                skater = request.session['skater']
+                if skater.wftda_number != "":
+                    initial_data['wftda_number'] = skater.wftda_number
+                    initial_data['wftda_confirm'] = 'yes'
+            except KeyError:
+                pass
+            form = EmergencyForm(initial_data)
 
     return render(request, 'registration/basic-registration-form.html', { 'form': form, 'step': 2, 'step_info': 'Emergency Contact and Medical Info', })
 

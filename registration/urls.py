@@ -9,7 +9,7 @@ urlpatterns = patterns('',
     (r'^emergency-info$', 'registration.views.emergency_info'),
     #(r'^legal-stuff$', 'registration.views.legal_stuff'),
     (r'^pay-dues$', 'registration.views.payment'),
-    (r'^done$', TemplateView.as_view(template_name="registration/done.html") ),
+    (r'^done$', 'registration.views.done'),
     
     (r'^$', 'registration.views.personal_details'),
 )
