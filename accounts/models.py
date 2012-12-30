@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import UserManager, BaseUserManager, AbstractBaseUser
 from django_localflavor_us.models import USStateField, USPostalCodeField, PhoneNumberField
 from datetime import datetime
-
+from accounts.email import send_receipt_email
 from mwd import settings
 
 from south.modelsinspector import add_introspection_rules
@@ -11,6 +11,11 @@ add_introspection_rules([], ["^django_localflavor_us\.models\.USPostalCodeField"
 add_introspection_rules([], ["^django_localflavor_us\.models\.PhoneNumberField"])
 
 
+class PaymentError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
 
 
 """
@@ -119,6 +124,110 @@ class Skater(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+
+    """
+    Get the stripe customer object, create one for this user if it doesnt exist
+    """
+    def get_stripe_customer(self, card_token = False):
+        customer = False
+        if self.stripe_customer_id:
+            import stripe
+            try:
+                stripe.api_key = settings.STRIPE_SECRET
+                customer = stripe.Customer.retrieve(self.stripe_customer_id)
+            except stripe.InvalidRequestError, e:
+                customer = False
+            except e:
+                pass
+
+        if customer:
+            return customer
+        else:
+            return self.create_stripe_customer(card_token)
+
+    """
+    Create a new stripe customer and save the customer ID
+    """
+    def create_stripe_customer(self, card_token):
+        if not card_token:
+            raise PaymentError("No credit card token sent with payment information. Our payment system can't charge a card if there is no card to charge...")
+            return False
+
+        customer_id = ""
+
+        import stripe
+        try:
+            stripe.api_key = settings.STRIPE_SECRET
+            customer = stripe.Customer.create(
+                description = self.get_full_name(),
+                card = card_token,
+                email = self.email,
+            )
+            customer_id = customer.id
+        except stripe.InvalidRequestError, e:
+            raise PaymentError("An error occured with our payment provider. Please try again and contact us if you still have issues.")
+        except e:
+            raise PaymentError("An error occured with our payment provider. Please try again and contact us if you still have issues.")
+
+        self.stripe_customer_id = customer_id
+        self.save()
+
+        return customer
+
+
+    def card_on_file(self):
+        if self.stripe_customer_id != "":
+            return True
+        else:
+            return False
+
+
+    """
+    Charge Stripe Customer
+    """
+    def charge_credit_card(self, description):
+
+        if self.card_on_file() is False:
+            raise PaymentError("No credit card on file.")
+
+        if self.balance > 0:
+            import stripe
+            try:
+                stripe.api_key = settings.STRIPE_SECRET
+                charge = stripe.Charge.create(
+                    amount = self.balance * 100,
+                    currency = "usd",
+                    customer = self.stripe_customer_id,
+                    description = description,
+                )
+            except stripe.StripeError, e:
+                raise PaymentError("There was a problem charing your card. Try again and contact us if you continue to receive this message.")
+            except e:
+                raise PaymentError("There was a problem communicating with our payment provider. Try again and contact us if you continue to receive this message.")
+
+            if charge.card.cvc_check == "fail":
+                raise PaymentError("That CVC code does not appear to be correct. The CVC code is either the 3-digit (Visa, MC, Disc.) or 4-digit (AMEX) code on the front or back of your card.")
+
+            "Payment succeeded."
+
+            receipt = Receipt(
+                    skater = self,
+                    amount = charge.amount / 100,
+                    method = "credit",
+                    method_detail = str(charge.id) + " " + charge.card.type + " x" + str(charge.card.last4) + " " + str(charge.card.exp_month) + "/" + str(charge.card.exp_year),
+                    description = description,
+                    date = datetime.now(),
+                )
+            receipt.save()
+            send_receipt_email(receipt, )
+
+            self.balance = self.balance - (charge.amount / 100)
+            self.save()
+
+
+
+
+
 
 
     email = models.EmailField(
@@ -236,7 +345,7 @@ class Skater(AbstractBaseUser):
         max_digits=10, 
         decimal_places=2,
         blank = True,
-        default = '0',
+        default = 0,
     )
 
     payment_preference = models.CharField(
@@ -251,6 +360,17 @@ class Skater(AbstractBaseUser):
         default = None,
         blank = True,
         null = True,
+    )
+
+    automatic_billing = models.BooleanField(
+        "Automatic Billing",
+        default = False,
+    )
+    
+    stripe_customer_id = models.CharField(
+        "Stripe Customer ID",
+        max_length = 32,
+        blank = True,
     )
 
     account_create_date = models.DateTimeField(auto_now_add = True)
@@ -374,7 +494,14 @@ class Invoice(models.Model):
     
     def __unicode__(self):
         return self.skater.derby_name + " - " + self.description + " - $" + str(self.amount)
-    
+
+    def mark_paid(self):
+        if self.status != "paid":
+            self.status = "paid"
+            self.paid_date = datetime.now()
+            self.save()
+
+
     skater = models.ForeignKey(
         settings.AUTH_USER_MODEL,
     )
@@ -409,6 +536,11 @@ class Invoice(models.Model):
         default = "unpaid",
     )
 
+    paid_date = models.DateField(
+        "Paid Date",
+        blank = True,
+    )
+
     amount = models.DecimalField(
         "Invoice Total", 
         max_digits=10, 
@@ -418,20 +550,35 @@ class Invoice(models.Model):
 
 """
 " Generate an invoice
+" If that invoice already exists
 " Create an invoice for a skater during a specified scheduling period.
 " schedule.get_dues_amount will automatically determine the amount that should be billed.
 """
-def generate_invoice(skater, schedule):
+def generate_scheduled_invoice(skater, schedule, description = False):
+
+    """ Check to see if the invoice already exists for this skater """
+    try:
+        invoice = Invoice.objects.get(skater=skater, schedule=schedule)
+        return invoice
+    except Invoice.DoesNotExist:
+        pass
+
+    if not description:
+        description = "Dues Payment - " + str(schedule)
+
     invoice = Invoice.objects.create(
                                 skater = skater,
                                 schedule = schedule,
                                 invoice_date = datetime.now(),
                                 due_date = schedule.due_date,
-                                description = "Dues Payment - " + schedule,
+                                description = description,
                                 amount = schedule.get_dues_amount(skater)
                             )
     
-    skater.balance += invoice.amount
+    b = skater.balance
+    a = invoice.amount
+
+    skater.balance = skater.balance + invoice.amount
     skater.save()
 
     return invoice
@@ -450,15 +597,15 @@ class Receipt(models.Model):
 
     def __unicode__(self):
         return self.skater.derby_name + " - " + self.description + " - $" + str(self.amount)
-    
+
     skater = models.ForeignKey(
         settings.AUTH_USER_MODEL,
     )
 
     amount = models.DecimalField(
         "Amount Paid", 
-        max_digits=10, 
-        decimal_places=2,
+        max_digits = 10, 
+        decimal_places = 2,
     )
 
     method = models.CharField(

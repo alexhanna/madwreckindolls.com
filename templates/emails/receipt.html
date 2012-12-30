@@ -1,29 +1,27 @@
-Hello,
+{% extends "emails/base.html" %}
+{% block content %}
+<br>
+<h1>MAD WRECKIN' DOLLS</h1>
+<h2>RECEIPT #{{ receipt.id }}</h2>
+<br>
+<div style="border-bottom:1px solid #cecece;height:20px;"></div>
+<br>
+<b>Skater:</b> {{ skater_full_name }}<br>
+<b>Description:</b> {{ receipt.description }}<br>
+<br>
+<b>Date:</b> {{ receipt.date }}<br>
+<b>Amount:</b> ${{ receipt.amount }}<br>
+<b>Payment Method:</b> {{ receipt.method }} {% if receipt.method_detail %}({{ receipt.method_detail }}){% endif %}<br>
+<br>
+<div style="border-bottom:1px solid #cecece;height:20px;"></div>
+<br>
+If you have any questions, please feel free to reply to this email.<br>
+<br>
+See you on the rink!<br>
+<br>
+Mad Wreckin' Dolls<br>
+<a href="mailto:madwreckindolls@gmail.com">madwreckindolls@gmail.com</a><br>
+<br>
 
-Thanks for paying your MWD dues online.
+{% endblock %}
 
-Receipt details
-
-blah blah
-
-
-
-
-
-
-
-   THE MWD SITE ROBOT         __
-  THANKS YOU FOR             \> )
- YOUR ATTENTION              /_/
-                      ____ /\_)
-                     /''__Y /
-                     \(>66</
-                      /\_\_)
-                    _/     \__
-                   (_\/\      \
-                 __/ /  >___'_/_ _
-                 \_ /  (_   _/  \_)
-                   U     \_(_)___/_\
-                           \ \_   (_\___
-                          (oooo/    \___)
-                                     oooo

@@ -111,14 +111,14 @@ function stripeResponseHandler(status, response)
 
 {% if step %}
 {% block step %}
-<div class="step">Step 4 of 4</div>
+<div class="step">Step 3 of 3</div>
 {% endblock %}
 {% endif %}
 
 {% block content %}
 
 <div class="skater-info">
-    February dues are <span>${{ dues_amount }}</span>.
+    February dues are <span>${{ skater.balance }}</span>.
 </div>
 
 <br>

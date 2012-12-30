@@ -146,7 +146,7 @@ class EmergencyForm(forms.Form):
         self.helper = FormHelper()
         self.helper.html5_required = True
         self.helper.add_input(Button('button', 'Back'))
-        self.helper.add_input(Submit('submit', 'Next Step - Legal'))
+        self.helper.add_input(Submit('submit', 'Next Step - Dues'))
         self.helper.form_class = 'form-horizontal'
         self.helper.form_method = 'post'
         self.helper.form_action = '?'

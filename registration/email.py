@@ -25,7 +25,7 @@ Here's how to pay:<br>
 
 """ % (session.name, skater.balance, settings.REGISTRATION_DEADLINE, settings.REGISTRATION_MAIL_INSTRUCTIONS)
 
-    html = render_to_string('registration/email.html', 
+    html = render_to_string('emails/registration.html', 
                 {
                     'intro' : intro,
                     'skater' : skater,
@@ -41,7 +41,11 @@ Here's how to pay:<br>
             settings.FROM_EMAIL,
             [ skater.email ],
             [ settings.FROM_EMAIL ],
-            headers = { 'Reply-To' : settings.FROM_EMAIL, 'Content-Type' : 'text/html' },
+            headers = { 
+                'Reply-To' : settings.FROM_EMAIL, 
+                'CC' : settings.FROM_EMAIL,
+                'Content-Type' : 'text/html' 
+            },
     )
 
     msg.send(fail_silently = False)
