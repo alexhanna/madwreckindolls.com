@@ -375,7 +375,7 @@ class Skater(AbstractBaseUser):
 
     account_create_date = models.DateTimeField(auto_now_add = True)
     account_modify_date = models.DateTimeField(auto_now = True)
-
+    registration_completed = models.BooleanField("Registration Completed")
 
 
 

@@ -48,8 +48,8 @@ def load_pre_reg(request, uid = False, hash = False):
         return render(request, 'registration/pre-reg-problem.html', data)
 
     """ Payment preference should already be set if the user is registered. """
-    if skater.payment_preference == '':
-        return render(request, 'registration/already-registered.html', data)
+    if skater.registration_completed:
+        return render(request, 'registration/pre-reg-already-registered.html', data)
 
     """ Things seem fine, load them up and point them towards registration. """
     request.session['skater'] = skater
@@ -210,6 +210,7 @@ def payment(request):
         pass
 
     data["skater"] = skater
+    payment_method = "pip"
 
     finished = False
     if skater.balance <= 0:
@@ -251,6 +252,10 @@ def payment(request):
     if finished:
         if skater.balance <= 0:
             invoice.mark_paid()
+
+        skater.registration_completed = True
+        skater.payment_method = payment_method
+        skater.save()
 
         try:
             skate_session = SkateSession.objects.get(name__exact = settings.REGISTRATION_SESSION_NAME)
