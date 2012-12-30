@@ -249,6 +249,7 @@ def payment(request):
             automatic_billing = form.cleaned_data['autobill']
             if payment_method == 'cc':
                 """ process credit card form """
+                payment_method = "credit"
                 try:
                     skater.create_stripe_customer(form.cleaned_data['stripe_token'])
                     skater.charge_credit_card(invoice.description)
