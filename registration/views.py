@@ -235,7 +235,9 @@ def payment(request):
         pass
 
     data["skater"] = skater
+
     payment_method = "pip"
+    automatic_billing = False
 
     finished = False
     if skater.balance <= 0:
@@ -244,6 +246,7 @@ def payment(request):
         form = PaymentForm(request.POST)
         if form.is_valid():
             payment_method = form.cleaned_data['payment_method']
+            automatic_billing = form.cleaned_data['autobill']
             if payment_method == 'cc':
                 """ process credit card form """
                 try:
@@ -280,6 +283,7 @@ def payment(request):
 
         skater.registration_completed = True
         skater.payment_method = payment_method
+        skater.automatic_billing = automatic_billing
         skater.save()
 
         try:
