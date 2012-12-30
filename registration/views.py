@@ -43,7 +43,7 @@ def load_pre_reg(request, uid = False, hash = False):
 
     """ MD5 will be their password hash and the email address concatonated """
     import hashlib
-    expecting = hashlib.md5().update(skater.password + skater.email).hexdigest()
+    expecting = hashlib.md5(skater.password + skater.email).hexdigest()
     if expecting != hash:
         return render(request, 'registration/pre-reg-problem.html', data)
 
