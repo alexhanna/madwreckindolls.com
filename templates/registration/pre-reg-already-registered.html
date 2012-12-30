@@ -1,0 +1,8 @@
+{% extends "registration/base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="alert alert-error">Sorry! It looks like you have already registered. If that's not the case, please contact <a href="mailto:{{ mailto }}">{{mailto}}</a> for assistance with registration.</div>
+
+{% endblock %}

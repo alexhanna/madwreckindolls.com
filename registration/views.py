@@ -27,8 +27,34 @@ def can_pre_reg(request):
 
 # STEP ZERO
 # Pre-load skater details for pre-registered person.
-def load_pre_reg(request):
-    pass
+def load_pre_reg(request, uid = False, hash = False):
+
+    data = {
+        'mailto' : settings.FROM_EMAIL
+    }
+
+    if not uid or not hash:
+        return render(request, 'registration/pre-reg-only-sorry.html', data)
+
+    try:
+        skater = Skater.objects.get(pk=uid)
+    except Skater.DoesNotExist:
+        return render(request, 'registration/pre-reg-problem.html', data)
+
+    """ MD5 will be their password hash and the email address concatonated """
+    import hashlib
+    expecting = hashlib.md5().update(skater.password + skater.email).hexdigest()
+    if expecting != hash:
+        return render(request, 'registration/pre-reg-problem.html', data)
+
+    """ Payment preference should already be set if the user is registered. """
+    if skater.payment_preference == '':
+        return render(request, 'registration/already-registered.html', data)
+
+    """ Things seem fine, load them up and point them towards registration. """
+    request.session['skater'] = skater
+    return HttpResponseRedirect(reverse('registration.views.personal_details'))
+     
 
 
 
@@ -36,7 +62,7 @@ def load_pre_reg(request):
 # Personal information - Name, address
 def personal_details(request):
     if not can_pre_reg(request):
-        return render(request, 'registration/pre-reg-only-sorry.html', {})
+        return render(request, 'registration/pre-reg-only-sorry.html', { 'mailto' : settings.FROM_EMAIL })
 
     if request.method == 'POST':
         form = PersonalForm(request.POST)
@@ -56,7 +82,7 @@ def personal_details(request):
 # Medical / emergency information
 def emergency_info(request):
     if not can_pre_reg(request):
-        return render(request, 'registration/pre-reg-only-sorry.html', {})
+        return render(request, 'registration/pre-reg-only-sorry.html', { 'mailto' : settings.FROM_EMAIL })
 
     try:
         request.session['personal_details']
@@ -136,7 +162,7 @@ def emergency_info(request):
 """
 def legal_stuff(request):
     if not can_pre_reg(request):
-        return render(request, 'registration/pre-reg-only-sorry.html', {})
+        return render(request, 'registration/pre-reg-only-sorry.html', { 'mailto' : settings.FROM_EMAIL })
     
     try:
         request.session['personal_details']
