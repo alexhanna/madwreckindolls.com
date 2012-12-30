@@ -166,7 +166,7 @@ class Skater(AbstractBaseUser):
             customer_id = customer.id
         except stripe.InvalidRequestError, e:
             raise PaymentError("An error occured with our payment provider. Please try again and contact us if you still have issues.")
-        except e:
+        except:
             raise PaymentError("An error occured with our payment provider. Please try again and contact us if you still have issues.")
 
         self.stripe_customer_id = customer_id
