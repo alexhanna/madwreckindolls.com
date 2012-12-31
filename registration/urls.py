@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     
     (r'^emergency-info$', 'registration.views.emergency_info'),
     #(r'^legal-stuff$', 'registration.views.legal_stuff'),
+    (r'^anything-else$', 'registration.views.anything_else'),
     (r'^pay-dues$', 'registration.views.payment'),
     (r'^done$', 'registration.views.done'),
     

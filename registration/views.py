@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
 from accounts.models import Skater, SkaterStatus, SkateSession, SkateSessionPaymentSchedule, Invoice, Receipt, PaymentError, generate_scheduled_invoice
-from registration.forms import PersonalForm, EmergencyForm, LegalForm, PaymentForm
+from registration.forms import PersonalForm, EmergencyForm, LegalForm, PaymentForm, AnythingElseForm
 from registration.email import send_registration_email
 #from legal.models import LegalDocumentBinder, LegalDocument, LegalDocumentSignature
 from mwd import settings
@@ -162,7 +162,7 @@ def emergency_info(request):
             """ Refresh skater session object after invoice generation (new balance) """
             request.session['skater'] = Skater.objects.get(pk=skater.id)
 
-            return HttpResponseRedirect(reverse('registration.views.payment'))
+            return HttpResponseRedirect(reverse('registration.views.anything_else'))
     else:
         try:
             form = request.session['emergency_info']
@@ -213,6 +213,31 @@ def legal_stuff(request):
     return render(request, 'registration/basic-registration-form.html', { 'form': form, 'step': 3, 'step_info': 'Legal', })
 """
 
+# STEP THREE POINT FIVE
+# ANYTHING ELSE WE SHOULD KNOW?
+def anything_else(request):
+    if not can_pre_reg(request):
+        return render(request, 'registration/pre-reg-only-sorry.html', { 'mailto' : settings.FROM_EMAIL })
+    
+    if not request.session.get("skater"):
+        return HttpResponseRedirect(reverse('registration.views.emergency_info'))
+    
+    skater = Skater.objects.get(pk=request.session.get("skater").id)
+
+    if request.method == 'POST':
+        form = AnythingElseForm(request.POST)
+        if form.is_valid():
+            skater.anything_else_registration = form.cleaned_data['anything_else_registration']
+            skater.save()
+            return HttpResponseRedirect(reverse('registration.views.payment'))
+    else:
+        initial_data = { 'anything_else_registration':  skater.anything_else_registration }
+        form = AnythingElseForm()
+    
+    return render(request, 'registration/basic-registration-form.html', { 'form': form, 'step': 3, 'step_info': 'Anything Else?', })
+
+
+
 
 # STEP FOUR
 # Payment
@@ -227,7 +252,7 @@ def payment(request):
              'REGISTRATION_MAIL_INSTRUCTIONS' : settings.REGISTRATION_MAIL_INSTRUCTIONS, 
              'STRIPE_PUBLISHABLE' : settings.STRIPE_PUBLISHABLE, }
     
-    skater = request.session.get("skater")
+    skater = Skater.objects.get(pk=request.session.get("skater").id)
     
     try:
         invoice = request.session.get("invoice")

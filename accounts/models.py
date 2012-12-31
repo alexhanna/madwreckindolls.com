@@ -345,6 +345,11 @@ class Skater(AbstractBaseUser):
         blank = True,
     )
 
+    anything_else_registration = models.TextField(
+        "Anything else we should know?",
+        blank = True,
+    )
+
     balance = models.DecimalField(
         "Account Balance", 
         max_digits=10, 

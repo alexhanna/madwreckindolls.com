@@ -143,14 +143,14 @@ class EmergencyForm(forms.Form):
         widget = forms.Textarea(),
         label = "Allergies and Medical Information",
         required = True,
-        help_text = "Any latex, drug allergies or medical conditions we should know about? If not, just tell us 'none'.",
+        help_text = "Any latex, drug allergies or medical conditions we should know about?<br>If not, just tell us 'none'.",
     )
     
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.html5_required = True
         self.helper.add_input(Button('button', 'Back'))
-        self.helper.add_input(Submit('submit', 'Next Step - Dues'))
+        self.helper.add_input(Submit('submit', 'Next Step'))
         self.helper.form_class = 'form-horizontal'
         self.helper.form_method = 'post'
         self.helper.form_action = '?'
@@ -174,12 +174,35 @@ class LegalForm(forms.Form):
         self.helper = FormHelper()
         self.helper.html5_required = True
         self.helper.add_input(Button('button', 'Back'))
-        self.helper.add_input(Submit('submit', 'Next Step - Dues'))
+        self.helper.add_input(Submit('submit', 'Next Step'))
         self.helper.form_class = 'form-horizontal'
         self.helper.form_method = 'post'
         self.helper.form_action = '?'
        
         super(LegalForm, self).__init__(*args, **kwargs)
+
+class AnythingElseForm(forms.Form):
+    anything_else_registration = forms.CharField(
+        widget = forms.Textarea(),
+        label = "Is there anything else we should know?",
+        required = False,
+        help_text = "Examples:<ul><li>I once wrestled a crocodile with my bare hands and won.</li><li>Bacon is delicious!</li><li>I'm so excited for derby!</li><li>I can't wait to hit bitches!</li></ul>",
+    )
+    
+    def __init__(self, *args, **kwargs):
+        
+        self.helper = FormHelper()
+        self.helper.html5_required = True
+        self.helper.add_input(Button('button', 'Back'))
+        self.helper.add_input(Submit('submit', 'Next Step - Dues'))
+        #self.helper.form_class = 'form-horizontal'
+        self.helper.form_method = 'post'
+        self.helper.form_action = '?'
+       
+        super(AnythingElseForm, self).__init__(*args, **kwargs)
+
+
+
 
 class PaymentForm(forms.Form):
     
