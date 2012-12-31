@@ -155,6 +155,11 @@ function stripeResponseHandler(status, response)
 
     <!-- credit card form -->
     <form class="form-horizontal">
+        
+        <div style="border:1px solid #fbf48b;background:#fcf9d2;padding:7px;width:400px;margin: 0 auto 25px auto;">
+                    <img src="/static/images/lock.png" alt="Secure!"> <span style="font-size:smaller">Your card info is sent securely. It's sent to our payment provider (<a href="http://stripe.com" target="_blank">stripe</a>) and never actually touches our server. Neat!</span>
+        </div>
+
         <div class="control-group">
             <label class="control-label" for="cc_name">Name on Card</label>
             <div class="controls">
@@ -212,7 +217,6 @@ function stripeResponseHandler(status, response)
             <label class="checkbox" style="margin-left:150px;">
                 <input type="checkbox" id="cc_automatic" style="font-size:20px;">
                 <b>Auto-bill my card for dues on the due date each month.</b><br>
-                <span style="font-size:smaller">Your card info is secure, it's saved at our payment provider (<a href="http://stripe.com" target="_blank">stripe</a>) and never actually touches our database. Neat!</span>
             </label>
         </div>
         <div class="form-actions">
