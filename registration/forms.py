@@ -32,6 +32,11 @@ class PersonalForm(forms.Form):
         label = "Phone",
         required = True,
     )
+
+    dob = forms.DateField(
+        label = "Date of Birth",
+        required = True,
+    )
     
     first_name = forms.CharField(
         label = "First Name",

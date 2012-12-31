@@ -6,10 +6,12 @@
 
 <title>{% block title %}MWD Registration{% endblock %}</title>
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" type="text/css">
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
 
-<link href='http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" type="text/css" />
+<link href="//fonts.googleapis.com/css?family=Kreon" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" type="text/css">
 <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.js" type="text/javascript"></script>
 
 <script type="text/javascript">
@@ -162,6 +164,10 @@ h1 {
     margin-top: 50px;
 }
 
+#id_dob {
+    width: 75px;
+}
+
 #id_zip {
     width: 80px;
 }
@@ -210,6 +216,13 @@ input[type="radio"] {
 
 $(document).ready(function() {
     $('#button-id-button').click(function() { window.history.go(-1) });
+
+    $('#id_dob').datepicker({ 
+            format: "yyyy/mm/dd", 
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-70:+0"
+    });
 
     if($('#div_id_wftda_confirm')) {
         // Select YES if WFTDA number is populated.

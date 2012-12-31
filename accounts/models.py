@@ -298,6 +298,11 @@ class Skater(AbstractBaseUser):
     zip = USPostalCodeField(
         blank = True,
     )
+
+    dob = models.DateField(
+        "Date of Birth",
+        blank = True,
+    )
     
     emergency_contact = models.CharField(
         "Emergency Contact Name", 
