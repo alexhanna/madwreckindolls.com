@@ -140,7 +140,12 @@ function stripeResponseHandler(status, response)
 <!-- CREDIT CARD PAYMENT -->
 
 <div class="payment_div" id="cc">
-    <input class="payment_option" type="radio" name="payment_method" value="cc"> Pay now with a Credit/Debit Card
+    <input class="payment_option" type="radio" name="payment_method" value="cc"> Pay now with a Credit/Debit Card 
+    
+    <img src="/static/images/visa.png" alt="Visa" style="height:26px;margin-left:30px;">
+    <img src="/static/images/mastercard.png" alt="Mastercard" style="height:26px;">
+    <img src="/static/images/discover.png" alt="Discover" style="height:26px;">
+    <img src="/static/images/amex.png" alt="Amex" style="height:26px;">
 </div>
 
 <div class="{% if not cc_error %}hide{% endif %} pm pm_cc">
@@ -206,7 +211,8 @@ function stripeResponseHandler(status, response)
         <div class="control-group">
             <label class="checkbox" style="margin-left:150px;">
                 <input type="checkbox" id="cc_automatic" style="font-size:20px;">
-                Auto-bill me each month blah blah reasons why its awesome and how it will work
+                <b>Auto-bill my card for dues on the due date each month.</b><br>
+                <span style="font-size:smaller">Your card info is secure, it's saved at our payment provider (<a href="http://stripe.com" target="_blank">stripe</a>) and never actually touches our database. Neat!</span>
             </label>
         </div>
         <div class="form-actions">

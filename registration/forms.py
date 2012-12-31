@@ -12,14 +12,13 @@ class PersonalForm(forms.Form):
 
     derby_name = forms.CharField(
         label = "Derby Name",
-        help_text = "Optional. Here's some information about choosing a name.",
+        help_text = "Optional. <a href='https://docs.google.com/document/d/18TQ6kMqFep7GIqSn6R9NQcstrnKzaU8KWf8XaSPcZ_4/edit?pli=1' target='_blank'>Here's some information for choosing a name and number.</a>",
         max_length = 100,
         required = False,
     )
     
     derby_number = forms.CharField(
         label = "Derby Number",
-        help_text = "Optional. Here's information about how to pick a valid derby number.",
         max_length = 50,
         required = False,
     )
@@ -139,7 +138,7 @@ class EmergencyForm(forms.Form):
         widget = forms.Textarea(),
         label = "Allergies and Medical Information",
         required = True,
-        help_text = "Will latex kill you? If so, we should know. If not, just tell us 'none'.",
+        help_text = "Any latex, drug allergies or medical conditions we should know about? If not, just tell us 'none'.",
     )
     
     def __init__(self, *args, **kwargs):
