@@ -142,10 +142,10 @@ function stripeResponseHandler(status, response)
 <div class="payment_div" id="cc">
     <input class="payment_option" type="radio" name="payment_method" value="cc"> Pay now with a Credit/Debit Card 
     
-    <img src="/static/images/visa.png" alt="Visa" style="height:26px;margin-left:30px;">
-    <img src="/static/images/mastercard.png" alt="Mastercard" style="height:26px;">
-    <img src="/static/images/discover.png" alt="Discover" style="height:26px;">
-    <img src="/static/images/amex.png" alt="Amex" style="height:26px;">
+    <img src="/images/visa.png" alt="Visa" style="height:26px;margin-left:30px;">
+    <img src="/images/mastercard.png" alt="Mastercard" style="height:26px;">
+    <img src="/images/discover.png" alt="Discover" style="height:26px;">
+    <img src="/images/amex.png" alt="Amex" style="height:26px;">
 </div>
 
 <div class="{% if not cc_error %}hide{% endif %} pm pm_cc">
@@ -157,7 +157,7 @@ function stripeResponseHandler(status, response)
     <form class="form-horizontal">
         
         <div style="border:1px solid #fbf48b;background:#fcf9d2;padding:7px;width:400px;margin: 0 auto 25px auto;">
-                    <img src="/static/images/lock.png" alt="Secure!"> <span style="font-size:smaller">Your card info is sent securely. It's sent to our payment provider (<a href="http://stripe.com" target="_blank">stripe</a>) and never actually touches our server. Neat!</span>
+                    <img src="/images/lock.png" alt="Secure!"> <span style="font-size:smaller">Your card info is sent securely. It's sent to our payment provider (<a href="http://stripe.com" target="_blank">stripe</a>) and never actually touches our server. Neat!</span>
         </div>
 
         <div class="control-group">
