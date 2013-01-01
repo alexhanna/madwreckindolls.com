@@ -134,7 +134,10 @@ def emergency_info(request):
             skater.state = personal_data['state']
             skater.zip = personal_data['zip']
             skater.phone = personal_data['phone']
-            skater.status = SkaterStatus.objects.get(name__exact = settings.REGISTRATION_DEFAULT_STATUS)
+            skater.dob = personal_data['dob']
+
+            if skater.status.name == settings.REGISTRATION_INACTIVE_STATUS:
+                skater.status = SkaterStatus.objects.get(name__exact = settings.REGISTRATION_DEFAULT_STATUS)
 
             skater.emergency_contact = emergency_data['emergency_contact']
             skater.emergency_relationship = emergency_data['emergency_relationship']
