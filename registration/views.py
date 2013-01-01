@@ -121,9 +121,13 @@ def emergency_info(request):
             if request.session.get("skater"):
                 "Previously created skater"
                 skater = request.session.get("skater")
+                # Make inactive skaters active now
+                if skater.status == SkaterStatus.objects.get(name__exact = settings.REGISTRATION_INACTIVE_STATUS):
+                    skater.status = SkaterStatus.objects.get(name__exact = settings.REGISTRATION_DEFAULT_STATUS)
             else:
                 "Brand new registratered user"
                 skater = Skater.objects.create_user(personal_data['email'], Skater.objects.make_random_password())
+                skater.status = SkaterStatus.objects.get(name__exact = settings.REGISTRATION_DEFAULT_STATUS)
                     
             skater.first_name = personal_data['first_name']
             skater.last_name = personal_data['last_name']
@@ -136,9 +140,6 @@ def emergency_info(request):
             skater.zip = personal_data['zip']
             skater.phone = personal_data['phone']
             skater.dob = personal_data['dob']
-
-            if skater.status.name == settings.REGISTRATION_INACTIVE_STATUS:
-                skater.status = SkaterStatus.objects.get(name__exact = settings.REGISTRATION_DEFAULT_STATUS)
 
             skater.emergency_contact = emergency_data['emergency_contact']
             skater.emergency_relationship = emergency_data['emergency_relationship']
