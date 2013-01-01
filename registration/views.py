@@ -86,6 +86,7 @@ def personal_details(request):
                     'zip': skater.zip,
                     'phone': skater.phone,
                     'email': skater.email,
+		    'dob': skater.dob,
                 }
             except KeyError:
                 initial_data = {'state': 'WI'}
