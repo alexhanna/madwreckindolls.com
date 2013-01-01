@@ -319,6 +319,8 @@ def payment(request):
     
         """ Clear out the session information """
         request.session.flush()
+        request.session['email'] = skater.email
+        request.session['balance'] = skater.balance
 
         return HttpResponseRedirect(reverse('registration.views.done'))
                     
@@ -326,4 +328,7 @@ def payment(request):
     
 
 def done(request):
-    return render(request, 'registration/done.html', {} )
+    if not request.session.get("email"):
+        return render(request, 'registration/pre-reg-problem.html', {} )
+
+    return render(request, 'registration/done.html', {'email': request.session.get("email"), 'balance': request.session.get("balance"), 'FROM_EMAIL': settings.FROM_EMAIL } )

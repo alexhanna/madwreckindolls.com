@@ -3,6 +3,26 @@
 
 {% block content %}
 
-<div class="alert alert-success">You are done registering! We should probably put a summary here and polish up a confirmation email.</div>
+<h1>We just sent you an email at <b>{{ email }}</b>!</h1>
+
+<div>
+
+There is a form attached, you need to sign the form and hand it to Audi or Trueblood.<br>
+<b>If you don't have a printer, no sweat!</b> We will have copies at the rink.<br>
+<br>
+{% if balance <= 0 %}
+It looks like you are all paid up for February dues. Nice work!<br>
+<br>
+Once you turn in the signed form, you are all signed up to skate!<br>
+{% else %}
+<b>Also, you need to pay your February dues of ${{ balance }} when you turn in the signed form.</b> We'll happily take your hard earned cash, check or credit cards.<br>
+<br>
+Once you turn in the signed form and dues, you are all signed up to skate!<br>
+{% endif %}
+<br>
+<br>
+<br>
+If something is incorrect or you did not receive the email, you can contact <a href="mailto:{{ FROM_EMAIL }}">{{ FROM_EMAIL }}</a> for help.
+</div>
 
 {% endblock %}
