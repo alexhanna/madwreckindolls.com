@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from accounts.models import Skater, SkaterStatus, SkateSession, SkateSessionPaymentSchedule, Invoice, Receipt, PaymentError, generate_scheduled_invoice
 from registration.forms import PersonalForm, EmergencyForm, LegalForm, PaymentForm, AnythingElseForm
 from registration.email import send_registration_email
-#from legal.models import LegalDocumentBinder, LegalDocument, LegalDocumentSignature
+from legal.models import LegalDocumentBinder, LegalDocument, LegalDocumentSignature
 from mwd import settings
 from mwd.utilities import get_client_ip
 
@@ -180,40 +180,7 @@ def emergency_info(request):
     return render(request, 'registration/basic-registration-form.html', { 'form': form, 'step': 2, 'step_info': 'Emergency Contact and Medical Info', })
 
 
-
-# STEP THREE
-# Legal shit
-# Currently disabled
-"""
-def legal_stuff(request):
-    if not can_pre_reg(request):
-        return render(request, 'registration/pre-reg-only-sorry.html', { 'mailto' : settings.FROM_EMAIL })
-    
-    try:
-        request.session['personal_details']
-        request.session['emergency_info']
-    except KeyError:
-        return HttpResponseRedirect(reverse('registration.views.emergency_info'))
-
-    mwd_binder = LegalDocumentBinder.objects.get(short_name__exact = "mwd")
-    if mwd_binder:
-        text = {'mwd': mwd_binder.get_active_version_text()}
-    else:
-        text = {'mwd': 'Legal document not found in backend.....'}
-    
-
-    if request.method == 'POST':
-        form = LegalForm(request.POST)
-        if form.is_valid():
-            request.session['legal_stuff'] = form
-            return HttpResponseRedirect(reverse('registration.views.payment'))
-    
-    form = LegalForm(initial=text)
-
-    return render(request, 'registration/basic-registration-form.html', { 'form': form, 'step': 3, 'step_info': 'Legal', })
-"""
-
-# STEP THREE POINT FIVE
+# STEP TWO POINT FIVE
 # ANYTHING ELSE WE SHOULD KNOW?
 def anything_else(request):
     if not can_pre_reg(request):
@@ -229,12 +196,58 @@ def anything_else(request):
         if form.is_valid():
             skater.anything_else_registration = form.cleaned_data['anything_else_registration']
             skater.save()
-            return HttpResponseRedirect(reverse('registration.views.payment'))
+            return HttpResponseRedirect(reverse('registration.views.legal_stuff'))
     else:
         initial_data = { 'anything_else_registration':  skater.anything_else_registration }
         form = AnythingElseForm()
     
     return render(request, 'registration/basic-registration-form.html', { 'form': form, 'step': 3, 'step_info': 'Anything Else?', })
+
+
+# STEP THREE
+# Legal shit
+def legal_stuff(request):
+    if not can_pre_reg(request):
+        return render(request, 'registration/pre-reg-only-sorry.html', { 'mailto' : settings.FROM_EMAIL })
+    
+    if not request.session.get("skater"):
+        return HttpResponseRedirect(reverse('registration.views.emergency_info'))
+    
+    skater = Skater.objects.get(pk=request.session.get("skater").id)
+            
+    mwd_binder = LegalDocumentBinder.objects.get(short_name__exact = "mwd")
+    if mwd_binder:
+        document = mwd_binder.get_active_version()
+        if document:
+            text = {'mwd' : document.text }
+        else:
+            text = { 'mwd' : "Problem pulling legal document from backend...." }
+    else:
+        text = {'mwd': 'Legal document not found in backend.....'}
+    
+    # Check to see if they already signed it
+    try:
+        sig = LegalDocumentSignature.objects.get(document=document, user=skater)
+        return HttpResponseRedirect(reverse('registration.views.payment'))
+    except LegalDocumentSignature.DoesNotExist:
+        pass
+    
+    if request.method == 'POST':
+        form = LegalForm(request.POST)
+        if form.is_valid():
+            if document:
+                sig = LegalDocumentSignature(
+                                document = document,
+                                user = skater,
+                                ip = get_client_ip(request)
+                      )
+                sig.save()
+            return HttpResponseRedirect(reverse('registration.views.payment'))
+    
+    form = LegalForm(initial=text)
+
+    return render(request, 'registration/basic-registration-form.html', { 'form': form, 'step': 4, 'step_info': 'Legal', })
+
 
 
 
@@ -287,21 +300,6 @@ def payment(request):
         else:
             """Invalid form - form.is_valid() failed"""
             data["error"] = "Could not create your account for some reason.... Try again and email us if it doesn't work."
-
-
-            "Save legal signature"
-            """
-                    mwd_binder = LegalDocumentBinder.objects.get(short_name__exact = "mwd")
-                    if mwd_binder:
-                        document = mwd_binder.get_active_version()
-                        if document:
-                            sig = LegalDocumentSignature(user=skater, document=document, ip=get_client_ip(request))
-                            sig.save()
-                        "else:"
-                        "ERROR: No active document version."
-                    "else:"
-                    "ERROR: No binder with that name."
-            """
 
     if finished:
         if skater.balance <= 0:

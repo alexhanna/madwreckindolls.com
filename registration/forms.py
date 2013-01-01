@@ -166,8 +166,10 @@ class LegalForm(forms.Form):
     )
 
     code_of_conduct_agree = forms.BooleanField(
-        label = "I have read and agree to the Code of Conduct"
+        label = """<b>By checking this box I certify that I have read, understand, and agree to abide by the above terms.</b>""",
+        required = True,
     )
+    
 
     def __init__(self, *args, **kwargs):
         
@@ -194,7 +196,7 @@ class AnythingElseForm(forms.Form):
         self.helper = FormHelper()
         self.helper.html5_required = True
         self.helper.add_input(Button('button', 'Back'))
-        self.helper.add_input(Submit('submit', 'Next Step - Dues'))
+        self.helper.add_input(Submit('submit', 'Next Step - Legal'))
         #self.helper.form_class = 'form-horizontal'
         self.helper.form_method = 'post'
         self.helper.form_action = '?'

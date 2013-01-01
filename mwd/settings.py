@@ -131,7 +131,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'south',
     
-    #'legal',
+    'legal',
     'accounts',
     'registration',
 )

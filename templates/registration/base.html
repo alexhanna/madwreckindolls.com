@@ -101,9 +101,13 @@ html, body {
 #div_id_wftda div.controls textarea,
 #div_id_mwd div.controls textarea {
     width: 98%;
-    height: 150px;
+    height: 320px;
     font-size: 9pt;
     margin-top:20px;
+}
+
+#div_id_code_of_conduct_agree div {
+    margin-left: 100px;;
 }
 
 .turq {
@@ -233,6 +237,11 @@ $(document).ready(function() {
     if($('#id_anything_else_registration'))
     {
         $('.form-actions').css('text-align', 'center');
+    }
+
+    if($('#div_id_code_of_conduct_agree'))
+    {
+        $('div.form-action').css('padding-left', '0px');
     }
 
     if($('#div_id_wftda_confirm')) {

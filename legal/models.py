@@ -28,24 +28,14 @@ class LegalDocumentBinder(models.Model):
         return self.document_name
 
 
-    def get_active_version(self):
-        return LegalDocument.objects.filter(document_group__exact = self.id).filter(active=True)[0]
-
-
     # Returns the active version of the legal document
-    def get_active_version_text(self):
+    def get_active_version(self):
         document = LegalDocument.objects.filter(document_group__exact = self.id).filter(active=True)
 
         if len(document) == 1:
-            return document[0].text
-
-        if len(document) > 1:
-            error = "WARNING: Multiple active versions of documents specified for " + self.document_name
+            return document[0]
         else:
-            error = "WARNING: No active document for " + self.document_name
-
-        return error
-
+            return False
 
 
 # The actual legal document (version and text)
