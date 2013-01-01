@@ -33,19 +33,23 @@ Here's how to pay:<br>
            )
 
 
+    subject = "Mad Wreckin' Dolls " + session.name + " Registration - Action Required"
+    text = strip_tags(html)
+
+
     msg = EmailMultiAlternatives(
-            "Mad Wreckin' Dolls " + session.name + " Registration Confirmation",
-            html,
+            subject,
+            text,
             settings.FROM_EMAIL,
             [ skater.email ],
             [ settings.FROM_EMAIL ],
             headers = { 
                 'Reply-To' : settings.FROM_EMAIL, 
                 'CC' : settings.FROM_EMAIL,
-                'Content-Type' : 'text/html' 
             },
     )
 
+    msg.content_subtype = "html"
     msg.send(fail_silently = False)
     
 
