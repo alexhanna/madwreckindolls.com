@@ -7,8 +7,6 @@
 
 AUTH_USER_MODEL = 'accounts.Skater'
 
-MANAGERS = ADMINS
-
 SERVER_EMAIL = "administrator@madwreckindolls.com"
 
 # Create settings_local.py and store
