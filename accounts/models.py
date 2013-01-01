@@ -306,6 +306,7 @@ class Skater(AbstractBaseUser):
     dob = models.DateField(
         "Date of Birth",
         blank = True,
+        null = True,
     )
     
     emergency_contact = models.CharField(
