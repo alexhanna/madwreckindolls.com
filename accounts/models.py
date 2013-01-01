@@ -537,10 +537,14 @@ class Invoice(models.Model):
 
     invoice_date = models.DateField(
         "Invoice Date",
+        blank = True,
+        null = True,
     )
 
     due_date = models.DateField(
         "Due Date",
+        blank = True,
+        null = True,
     )
     
     description = models.TextField(
@@ -564,6 +568,7 @@ class Invoice(models.Model):
     paid_date = models.DateField(
         "Paid Date",
         blank = True,
+        null = True,
     )
 
     amount = models.DecimalField(
