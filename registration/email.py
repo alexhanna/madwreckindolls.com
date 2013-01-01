@@ -34,7 +34,7 @@ Here's how to pay:<br>
 
 
     subject = "Mad Wreckin' Dolls " + session.name + " Registration - Action Required"
-    text = strip_tags(html)
+    text = "This is an HTML email. You are reading the text format. You well, should not be reading this. Uh... Contact us if you cant see the real text of this email."
 
 
     msg = EmailMultiAlternatives(
@@ -48,6 +48,9 @@ Here's how to pay:<br>
                 'CC' : settings.FROM_EMAIL,
             },
     )
+
+    msg.attach_alternative(html, "text/html")
+    msg.attach_file(settings.LEGAL_FILES_DIR + 'ReleaseandWaiverofLiability-01-01-2013.pdf')
 
     msg.content_subtype = "html"
     msg.send(fail_silently = False)
