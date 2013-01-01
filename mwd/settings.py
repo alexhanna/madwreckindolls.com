@@ -4,9 +4,6 @@
 # your local database settings and other information there.
 
 
-ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
-)
 
 AUTH_USER_MODEL = 'accounts.Skater'
 
