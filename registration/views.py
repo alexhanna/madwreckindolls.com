@@ -42,9 +42,7 @@ def load_pre_reg(request, uid = False, hash = False):
         return render(request, 'registration/pre-reg-problem.html', data)
 
     """ MD5 will be their password hash and the email address concatonated """
-    import hashlib
-    expecting = hashlib.md5(skater.password + skater.email).hexdigest()
-    if expecting != hash:
+    if skater.user_hash != hash:
         return render(request, 'registration/pre-reg-problem.html', data)
 
     """ Payment preference should already be set if the user is registered. """
