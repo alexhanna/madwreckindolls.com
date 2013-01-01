@@ -8,3 +8,13 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+
+""" http://stackoverflow.com/a/9011133 """
+
+import random
+import string
+
+def random_string(length):
+    pool = string.letters + string.digits
+    return ''.join(random.choice(pool) for i in xrange(length))

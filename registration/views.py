@@ -70,6 +70,7 @@ def personal_details(request):
             request.session['personal_details'] = form
             return HttpResponseRedirect(reverse('registration.views.emergency_info'))
     else:
+        show_errors = True
         try:
             form = request.session['personal_details']
         except KeyError:
@@ -89,8 +90,10 @@ def personal_details(request):
                     'email': skater.email,
                 }
             except KeyError:
-                initial_data = {}
+                initial_data = {'state': 'WI'}
+                show_errors = False
             form = PersonalForm(initial_data)
+            form.helper.form_show_errors = show_errors
 
     return render(request, 'registration/basic-registration-form.html', { 'form': form, 'step': 1, 'step_info': 'Skater Information', })
     
@@ -105,6 +108,8 @@ def emergency_info(request):
         request.session['personal_details']
     except KeyError:
         return HttpResponseRedirect(reverse('registration.views.personal_details'))
+    
+    show_errors = True
 
     if request.method == 'POST':
         form = EmergencyForm(request.POST)
@@ -168,6 +173,7 @@ def emergency_info(request):
             form = request.session['emergency_info']
         except KeyError:
             initial_data = {}
+            show_errors = False
             try:
                 skater = request.session['skater']
                 if skater.wftda_number != "":
@@ -177,6 +183,7 @@ def emergency_info(request):
                 pass
             form = EmergencyForm(initial_data)
 
+    form.helper.form_show_errors = show_errors
     return render(request, 'registration/basic-registration-form.html', { 'form': form, 'step': 2, 'step_info': 'Emergency Contact and Medical Info', })
 
 

@@ -4,6 +4,9 @@ from django_localflavor_us.models import USStateField, USPostalCodeField, PhoneN
 from datetime import datetime
 from accounts.email import send_receipt_email
 from mwd import settings
+from mwd.utilities import random_string
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^django_localflavor_us\.models\.USStateField"])
@@ -384,9 +387,19 @@ class Skater(AbstractBaseUser):
         blank = True,
     )
 
+    def set_user_hash(self, force = False):
+        if force or self.user_hash == '':
+            self.user_hash = random_string(32)
+
+    user_hash = models.CharField(max_length=50, unique = True)
     account_create_date = models.DateTimeField(auto_now_add = True)
     account_modify_date = models.DateTimeField(auto_now = True)
     registration_completed = models.BooleanField("Registration Completed")
+
+@receiver(pre_save, sender=Skater)
+def skater_save_handler(sender, instance, **kwargs):
+    instance.set_user_hash()
+
 
 
 
