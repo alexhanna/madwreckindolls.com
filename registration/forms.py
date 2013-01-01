@@ -10,19 +10,6 @@ from mwd import settings
 
 class PersonalForm(forms.Form):
 
-    derby_name = forms.CharField(
-        label = "Derby Name",
-        help_text = "Optional. <a href='https://docs.google.com/document/d/18TQ6kMqFep7GIqSn6R9NQcstrnKzaU8KWf8XaSPcZ_4/edit?pli=1' target='_blank'>Here's some information for choosing a name and number.</a>",
-        max_length = 100,
-        required = False,
-    )
-    
-    derby_number = forms.CharField(
-        label = "Derby Number",
-        max_length = 50,
-        required = False,
-    )
-
     email = forms.EmailField(
         label = "Email Address",
         required = True,
@@ -78,6 +65,19 @@ class PersonalForm(forms.Form):
     zip = USZipCodeField(
         label = "Zip Code",
         required = True,
+    )
+
+    derby_name = forms.CharField(
+        label = "Derby Name",
+        help_text = "Optional. <a href='https://docs.google.com/document/d/18TQ6kMqFep7GIqSn6R9NQcstrnKzaU8KWf8XaSPcZ_4/edit?pli=1' target='_blank'>Here's some information for choosing a name and number.</a>",
+        max_length = 100,
+        required = False,
+    )
+    
+    derby_number = forms.CharField(
+        label = "Derby Number",
+        max_length = 50,
+        required = False,
     )
 
     def __init__(self, *args, **kwargs):
