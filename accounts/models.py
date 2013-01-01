@@ -213,6 +213,7 @@ class Skater(AbstractBaseUser):
             receipt = Receipt(
                     skater = self,
                     amount = charge.amount / 100,
+                    fee = float(charge.fee_details[0].amount) / 100.0,
                     method = "credit",
                     method_detail = str(charge.id) + " " + charge.card.type + " x" + str(charge.card.last4) + " " + str(charge.card.exp_month) + "/" + str(charge.card.exp_year),
                     description = description,
@@ -616,6 +617,14 @@ class Receipt(models.Model):
         "Amount Paid", 
         max_digits = 10, 
         decimal_places = 2,
+    )
+    
+    fee = models.DecimalField(
+        "Fee", 
+        max_digits = 10, 
+        decimal_places = 2,
+        default = 0,
+        help_text = "Payment provider fees for this transaction.",
     )
 
     method = models.CharField(
