@@ -119,7 +119,7 @@ def emergency_info(request):
                 skater = request.session.get("skater")
             else:
                 "Brand new registratered user"
-                skater = Skater.objects.create_user(personal_data['email'], "skates")
+                skater = Skater.objects.create_user(personal_data['email'], Skater.objects.make_random_password())
                     
             skater.first_name = personal_data['first_name']
             skater.last_name = personal_data['last_name']
