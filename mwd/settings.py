@@ -4,7 +4,6 @@
 # your local database settings and other information there.
 
 
-DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
