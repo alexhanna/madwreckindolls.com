@@ -4,8 +4,6 @@
 # your local database settings and other information there.
 
 
-TEMPLATE_DEBUG = DEBUG
-
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
