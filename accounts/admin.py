@@ -12,8 +12,11 @@ class SkateSessionPaymentAmountInline(admin.TabularInline):
 class SkateSessionPaymentScheduleAdmin(admin.ModelAdmin):
     inlines = (SkateSessionPaymentAmountInline,)
 
+class SkaterStatusAdmin(admin.ModelAdmin):
+    list_display = ('name', 'dues_amount', )
 
-admin.site.register(SkaterStatus)
+
+admin.site.register(SkaterStatus, SkaterStatusAdmin)
 admin.site.register(SkateSessionPaymentSchedule, SkateSessionPaymentScheduleAdmin)
 admin.site.register(SkateSession)
 
