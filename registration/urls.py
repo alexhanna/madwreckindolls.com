@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 urlpatterns = patterns('',
     
     # pre-reg only
-    (r'^(?P<uid>\d)/(?P<hash>[a-z0-9]{32})$', 'registration.views.load_pre_reg'),
+    (r'^(?P<uid>\d)/(?P<hash>[a-zA-Z0-9]{32})$', 'registration.views.load_pre_reg'),
     
     (r'^emergency-info$', 'registration.views.emergency_info'),
     (r'^anything-else$', 'registration.views.anything_else'),
