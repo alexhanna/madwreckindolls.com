@@ -212,7 +212,7 @@ class Skater(AbstractBaseUser):
 
             receipt = Receipt(
                     skater = self,
-                    amount = charge.amount / 100,
+                    amount = float(charge.amount) / 100.0,
                     fee = float(charge.fee_details[0].amount) / 100.0,
                     method = "credit",
                     method_detail = str(charge.id) + " " + charge.card.type + " x" + str(charge.card.last4) + " " + str(charge.card.exp_month) + "/" + str(charge.card.exp_year),
