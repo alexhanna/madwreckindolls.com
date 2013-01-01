@@ -32,7 +32,7 @@ class SkaterStatus(models.Model):
         verbose_name_plural = "Skater Statuses"
     
     def __unicode__(self):
-        return self.name
+        return self.name.title()
 
 
     name = models.CharField(
