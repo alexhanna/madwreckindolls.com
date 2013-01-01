@@ -34,12 +34,10 @@ Here's how to pay:<br>
 
 
     subject = "Mad Wreckin' Dolls " + session.name + " Registration - Action Required"
-    text = "This is an HTML email. You are reading the text format. You well, should not be reading this. Uh... Contact us if you cant see the real text of this email."
-
 
     msg = EmailMultiAlternatives(
             subject,
-            text,
+            html,
             settings.FROM_EMAIL,
             [ skater.email ],
             [ settings.FROM_EMAIL ],
@@ -49,7 +47,6 @@ Here's how to pay:<br>
             },
     )
 
-    msg.attach_alternative(html, "text/html")
     msg.attach_file(settings.LEGAL_FILES_DIR + 'ReleaseandWaiverofLiability-01-01-2013.pdf')
 
     msg.content_subtype = "html"
