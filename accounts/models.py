@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import UserManager, BaseUserManager, AbstractBaseUser
-from django_localflavor_us.models import USStateField, USZipCodeField, PhoneNumberField
+from django_localflavor_us.models import USStateField, PhoneNumberField
 from datetime import datetime
 from accounts.email import send_receipt_email
 from mwd import settings
@@ -299,7 +299,8 @@ class Skater(AbstractBaseUser):
         blank = True,
     )
 
-    zip = USZipCodeField(
+    zip = models.CharField(
+        max_length = 20,
         blank = True,
     )
 
