@@ -198,7 +198,7 @@ class Skater(AbstractBaseUser):
             try:
                 stripe.api_key = settings.STRIPE_SECRET
                 charge = stripe.Charge.create(
-                    amount = self.balance * 100,
+                    amount = int(self.balance) * 100,
                     currency = "usd",
                     customer = self.stripe_customer_id,
                     description = description,
@@ -215,7 +215,7 @@ class Skater(AbstractBaseUser):
 
             receipt = Receipt(
                     skater = self,
-                    amount = float(charge.amount) / 100.0,
+                    amount = float(charge.amount) / 100,
                     fee = float(charge.fee_details[0].amount) / 100.0,
                     method = "credit",
                     method_detail = str(charge.id) + " " + charge.card.type + " x" + str(charge.card.last4) + " " + str(charge.card.exp_month) + "/" + str(charge.card.exp_year),
