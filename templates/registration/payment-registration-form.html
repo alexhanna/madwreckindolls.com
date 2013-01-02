@@ -42,6 +42,7 @@ $(document).ready(function() {
         {
             // Attempt to submit the card to stripe
             Stripe.createToken({
+		name: $('#cc_name').val(),
                 number: $('#cc_num').val(),
                 cvc: $('#cc_cvc').val(),
                 exp_month: $('#cc_month').val(),
