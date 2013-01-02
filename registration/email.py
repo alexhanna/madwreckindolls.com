@@ -5,16 +5,14 @@ from mwd import settings
 
 def send_registration_email(session, skater):
 
-    intro = ""
-
     if skater.balance != 0:
         intro = """
 <br>        
-You are almost done registering to skate. Once we receive payment and a signed waiver, your registration will be complete.<br>
+You are almost done registering to skate. Once we receive payment and a signed waiver, your registration will be complete. <b>If you don't have a printer, we'll have copies of the waiver form at the rink.</b><br>
 <br>
 Dues payment of $""" + str(skater.balance) + " must be paid by " + settings.REGISTRATION_DEADLINE + """<br>
 <br>
-Here's how to pay:<br>
+<b>Here's how to pay:</b><br>
 <br>
 1. Find The Auditor or Trueblood in person and hand them cash, check, credit cards and sweaty hugs.<br>
 <br>
@@ -22,6 +20,11 @@ Here's how to pay:<br>
 <br>
 
 """
+    else:
+	intro = """
+<br>
+You are almost done registering to skate. Once we receive your signed waiver (attached!), your registration will be complete. <b>If you don't have a printer, we'll have copies of the waiver at the rink.</b>"""
+
 
     html = render_to_string('emails/registration.html', 
                 {
@@ -33,7 +36,7 @@ Here's how to pay:<br>
            )
 
 
-    subject = "Mad Wreckin' Dolls " + session.name + " Registration - Action Required"
+    subject = "Mad Wreckin' Dolls " + session.name + " Registration - Action Required [#" + skater.id + "]"
 
     msg = EmailMultiAlternatives(
             subject,
