@@ -36,7 +36,7 @@ You are almost done registering to skate. Once we receive your signed waiver (at
            )
 
 
-    subject = "Mad Wreckin' Dolls " + session.name + " Registration - Action Required [#" + skater.id + "]"
+    subject = "Mad Wreckin' Dolls " + session.name + " Registration - Action Required [#" + str(skater.id) + "]"
 
     msg = EmailMultiAlternatives(
             subject,
