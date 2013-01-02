@@ -15,7 +15,7 @@ def send_receipt_email(receipt):
 
 
     msg = EmailMultiAlternatives(
-            "Mad Wreckin' Dolls Payment Receipt (#" + str(receipt.id) + ")",
+            "Mad Wreckin' Dolls Payment Receipt #" + str(receipt.id),
             html,
             settings.FROM_EMAIL,
             [ receipt.skater.email ],
@@ -27,5 +27,6 @@ def send_receipt_email(receipt):
             },
     )
 
+    msg.content_subtype = "html"
     msg.send(fail_silently = False)
 
