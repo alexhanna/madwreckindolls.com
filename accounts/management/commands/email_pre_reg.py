@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
         count = 1
 
-        skaters = Skater.objects.filter(pk=88)
+        #skaters = Skater.objects.filter(pk=88)
         #skaters = Skater.objects.all()
 
         for skater in skaters:
@@ -40,7 +40,8 @@ class Command(BaseCommand):
             )
 
             msg.content_subtype = "html"
-            msg.send(fail_silently = False)
-            self.stdout.write( str(count) + " OK! " + skater.email )
+            #msg.send(fail_silently = False)
+            
+	    self.stdout.write( str(count) + " OK! " + skater.email )
             count = count + 1
 
