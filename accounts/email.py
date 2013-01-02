@@ -9,7 +9,7 @@ def send_receipt_email(receipt):
                 {
                     'skater' : receipt.skater,
                     'receipt' : receipt,
-                    'skater_short_name': receipt.skater.get_short_name(),
+                    'skater_full_name': receipt.skater.get_full_name(),
                 }
            )
 
