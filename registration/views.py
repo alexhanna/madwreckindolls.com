@@ -9,6 +9,7 @@ from registration.email import send_registration_email
 from legal.models import LegalDocumentBinder, LegalDocument, LegalDocumentSignature
 from mwd import settings
 from mwd.utilities import get_client_ip
+from django.db import IntegrityError
 
 # If pre-registration is going on, only allow existing accounts to access the page for pre-registration
 # Returns False if the user is ineligible for pre-reg
@@ -126,8 +127,12 @@ def emergency_info(request):
                     skater.status = SkaterStatus.objects.get(name__exact = settings.REGISTRATION_DEFAULT_STATUS)
             else:
                 "Brand new registratered user"
-                skater = Skater.objects.create_user(personal_data['email'], Skater.objects.make_random_password())
-                skater.status = SkaterStatus.objects.get(name__exact = settings.REGISTRATION_DEFAULT_STATUS)
+                try:
+		   skater = Skater.objects.create_user(personal_data['email'], Skater.objects.make_random_password())
+                   skater.status = SkaterStatus.objects.get(name__exact = settings.REGISTRATION_DEFAULT_STATUS)
+		except IntegrityError:
+        	   return render(request, 'registration/reg-email-exists.html', { 'mailto' : settings.FROM_EMAIL })
+		   
                     
             skater.first_name = personal_data['first_name']
             skater.last_name = personal_data['last_name']
