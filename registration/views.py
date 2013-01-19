@@ -73,6 +73,7 @@ def personal_details(request):
         try:
             form = request.session['personal_details']
         except KeyError:
+            show_errors = False
             try:
                 skater = request.session['skater']
                 initial_data = {
@@ -91,7 +92,6 @@ def personal_details(request):
                 }
             except KeyError:
                 initial_data = {'state': 'WI'}
-                show_errors = False
             form = PersonalForm(initial_data)
             form.helper.form_show_errors = show_errors
 
