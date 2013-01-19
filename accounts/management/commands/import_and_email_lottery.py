@@ -27,8 +27,8 @@ class Command(BaseCommand):
             for row in reader:
                 count = count + 1
                 if count != 1:
-                        email = row[2]
-                        #try:
+                    email = row[2]
+                    try:
                         skater = Skater.objects.create_user(email, Skater.objects.make_random_password())
                         skater.status = SkaterStatus.objects.get(name__exact = settings.REGISTRATION_INACTIVE_STATUS)
 
@@ -63,5 +63,5 @@ class Command(BaseCommand):
 
                         self.stdout.write( str(count) + " OK! " + email )
 
-                        #except:
-                        #    self.stdout.write( str(count) + " OH CRAP ----- Problem importing row: " + email )
+                    except:
+                        self.stdout.write( str(count) + " OH CRAP ----- Problem importing row: " + email )
