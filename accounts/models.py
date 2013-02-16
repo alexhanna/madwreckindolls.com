@@ -150,17 +150,66 @@ class Skater(AbstractBaseUser):
 
     """
     Create a new stripe customer and save the customer ID
+    
+    Legacy function - This was (and still sort of is) used for the registration scripts.
+    Replaced by update_stripe_customer below.
     """
     def create_stripe_customer(self, card_token):
-        if not card_token:
-            raise PaymentError("No credit card token sent with payment information. Our payment system can't charge a card if there is no card to charge...")
+        return self.update_stripe_customer(card_token)
+
+
+    """ Get the current active stripe card token associated with this customer id """
+    def get_active_stripe_card_token(self):
+        if self.stripe_customer_id == '':
             return False
 
-        customer_id = ""
-
         import stripe
+        stripe.api_key = settings.STRIPE_SECRET
         try:
-            stripe.api_key = settings.STRIPE_SECRET
+            cust = stripe.Customer.retrieve(self.stripe_customer_id)
+        except:
+            raise PaymentError("There was a problem with our payment provider. Contact finance@madwreckindolls.com for help. Sorry :(")
+
+        return cust.active_card
+
+        
+
+    def update_stripe_card_description( self, card_token = False):
+        if not card_token:
+            card_token = self.get_active_stripe_card_token()
+
+        if not card_token:
+            return
+
+        self.stripe_card_description = card_token.type + " x" + str(card_token.last4) + " " + str(card_token.exp_month) + "/" + str(card_token.exp_year)
+        self.save()
+
+
+
+    """
+    Update a Stripe Customer's credit card token. If a customer does not exist for this skater, create it.
+    """
+    def update_stripe_customer(self, card_token):
+        if not card_token:
+            raise PaymentError("No credit card token sent with payment information. Our payment system can't charge a card if there is no card to charge...")
+        
+        import stripe
+        stripe.api_key = settings.STRIPE_SECRET
+
+        """ Customer exists... update the card info. """
+        if self.stripe_customer_id != "":
+            try:
+                cust = stripe.Customer.retrieve(self.stripe_customer_id)
+                cust.card = card_token
+                cust.save()
+
+                return cust
+
+            except stripe.InvalidRequestError:
+                pass
+
+        """ Customer doesn't exist. We need to create them. """
+        try:
             customer = stripe.Customer.create(
                 description = self.get_full_name(),
                 card = card_token,
@@ -171,11 +220,12 @@ class Skater(AbstractBaseUser):
             raise PaymentError("An error occured with our payment provider. Please try again and contact us if you still have issues.")
         except:
             raise PaymentError("An error occured with our payment provider. Please try again and contact us if you still have issues.")
-
+        
         self.stripe_customer_id = customer_id
         self.save()
 
         return customer
+
 
 
     def card_on_file(self):
@@ -227,6 +277,50 @@ class Skater(AbstractBaseUser):
 
             self.balance = self.balance - (charge.amount / 100)
             self.save()
+            
+            self.set_unpaid_invoices_paid(charge.amount / 100.0)
+
+
+    """ Get unpaid invoices for this user and return them as a friendly bundle """
+    def get_unpaid_invoices(self):
+        return Invoice.objects.filter(skater=self).filter(status="unpaid")
+
+    
+    """ Get unpaid invoices short name for billing / invoicing purposes """
+    def get_unpaid_invoices_description(self):
+        invoices = self.get_unpaid_invoices()
+        
+        """ No unpaid invoices """
+        if len(invoices) == 0:
+            return ""
+
+        """ It's just a single invoice """
+        if len(invoices) == 1:
+            return str(invoices[0])
+
+        """ Multiple unpaid invoices """
+        invoices_desc = []
+
+        for inv in invoices:
+            invoices_desc.push('#' + str(inv.id))
+
+        return "Invoices " + ', '.join(invoices_desc)
+
+
+    """ Mark invoices as paid
+    Automatically detect the invoices that are open and mark them as paid
+    """
+    def set_unpaid_invoices_paid(self, amount_paid):
+        invoice_total = 0
+
+        """ Check that the amount_paid matches the total amount on the invoices """
+        invoices = self.get_unpaid_invoices()
+        for inv in invoices:
+            invoice_total = invoice_total + inv.amount
+
+        if invoice_total == amount_paid:
+            for inv in invoices:
+                inv.mark_paid()
 
 
 
@@ -385,6 +479,12 @@ class Skater(AbstractBaseUser):
     
     stripe_customer_id = models.CharField(
         "Stripe Customer ID",
+        max_length = 32,
+        blank = True,
+    )
+
+    stripe_card_description = models.CharField(
+        "Stripe Credit Card Description",
         max_length = 32,
         blank = True,
     )

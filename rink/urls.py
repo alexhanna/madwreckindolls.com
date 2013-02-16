@@ -1,7 +1,18 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
+                       
+                       
+""" Auth URL configuration stuff is heavily borrowed from: 
+    http://peyman-django.blogspot.com/2010/03/full-easy-authentication-using_19.html """
+
 
 urlpatterns = patterns('',
+                       (r'^$', 'rink.views.index'),
+                       (r'^dues/$', 'rink.views.dues'),
+                       (r'^dues/pay$', 'rink.views.pay_dues'),
+                       (r'^dues/autopay$', 'rink.views.autopay_dues'),
+                       (r'^dues/process-dues$', 'rink.views.process_dues'),
+
                        (r'^login/$', 
                         'django.contrib.auth.views.login', 
                         {'template_name': 'rink/login.html'}),
@@ -35,7 +46,5 @@ urlpatterns = patterns('',
                         'django.contrib.auth.views.password_reset_complete', 
                         {'template_name': 'rink/password_reset_complete.html'}),
 
-                       (r'^$',
-                        'rink.views.index'),
 
 )
