@@ -8,6 +8,9 @@ urlpatterns = patterns('',
     url(r'^$', 'frontpage.views.index'),
     url(r'^robots.txt$', 'frontpage.views.robotstxt'),
 
+    # Skater management portal
+    url(r'^rink/', include('rink.urls')),
+
     # Registration
     url(r'^registration/', include('registration.urls')),
 
