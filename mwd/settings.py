@@ -10,7 +10,7 @@ AUTH_USER_MODEL = 'accounts.Skater'
 SERVER_EMAIL = "administrator@madwreckindolls.com"
 
 LOGIN_URL = "/rink/login/"
-
+LOGIN_REDIRECT_URL = "/rink/"
 
 # Create settings_local.py and store
 # your local database settings and other information there.
