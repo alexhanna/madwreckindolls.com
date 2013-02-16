@@ -1,0 +1,54 @@
+{% extends "rink/base.html" %}
+
+{% block content %}
+
+<style type="text/css">
+
+.form-horizontal .controls {
+    margin-left: 0;
+}
+.forgot {
+    font-size: smaller;
+}
+</style>
+
+<div style="margin-top:30px;" class="span4">
+
+<form action="{% url "django.contrib.auth.views.login" %}" method="post" class="form-horizontal">
+
+{% csrf_token %}
+<input type="hidden" name="next" value="{{ next }}" />
+
+  <fieldset>
+      <legend>Welcome to the MWD Rink</legend>
+
+    {% if form.errors %}
+    <div class="alert alert-error">
+        <strong>Login failed.</strong> Try again or <a href="{% url "django.contrib.auth.views.password_reset" %}">reset your password</a>.
+    </div>
+    {% endif %}
+
+      <div class="control-group">
+        <div class="controls">
+            <input id="id_username" type="text" name="username" maxlength="254" placeholder="Email Address" />
+        </div>
+      </div>
+        
+      <div class="control-group">
+        <div class="controls">
+            <input type="password" name="password" id="id_password" placeholder="Password" />
+        </div>
+      </div>
+      
+      <div class="control-group">
+        <div class="controls">
+          <button type="submit" class="btn">Login</button>
+          <span style="margin-left:20px;"><a href="{% url "django.contrib.auth.views.password_reset" %}" class="forgot">Forgot password?</a></span>
+        </div>
+      </div>
+  </fieldset>
+</form>
+
+</div>
+
+{% endblock %}
