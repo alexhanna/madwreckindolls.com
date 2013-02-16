@@ -9,6 +9,9 @@ AUTH_USER_MODEL = 'accounts.Skater'
 
 SERVER_EMAIL = "administrator@madwreckindolls.com"
 
+LOGIN_URL = "/rink/login/"
+
+
 # Create settings_local.py and store
 # your local database settings and other information there.
 #
@@ -128,6 +131,7 @@ INSTALLED_APPS = (
     'legal',
     'accounts',
     'registration',
+    'rink',
 )
 
 # A sample logging configuration. The only tangible logging
