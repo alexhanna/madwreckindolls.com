@@ -12,6 +12,7 @@ urlpatterns = patterns('',
                        (r'^dues/pay$', 'rink.views.pay_dues'),
                        (r'^dues/autopay$', 'rink.views.autopay_dues'),
                        (r'^dues/process-dues$', 'rink.views.process_dues'),
+                       (r'^profile$', 'rink.views.profile'),
 
                        (r'^login/$', 
                         'django.contrib.auth.views.login', 
