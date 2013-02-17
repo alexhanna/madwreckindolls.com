@@ -2,13 +2,15 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from rink.forms import PaymentForm, AutopayForm, ProcessForm
 from mwd import settings
-from accounts.models import PaymentError
+from accounts.models import PaymentError, Invoice, Receipt, SkateSessionPaymentSchedule
+from datetime import date
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
 @login_required
 def index(request):
-    return render(request, 'rink/index.html')
+    return HttpResponseRedirect(reverse('rink.views.dues'))
+    #return render(request, 'rink/index.html')
 
 @login_required
 def dues(request):
@@ -20,12 +22,14 @@ def dues(request):
     except PaymentError:
         pass
 
-    upcoming = []
-    history = []
+    upcoming = SkateSessionPaymentSchedule.objects.filter(due_date__gte=date.today())
+    invoices = Invoice.objects.filter(skater=request.user)
+    payments = Receipt.objects.filter(skater=request.user)
 
     data = {
         "upcoming": upcoming,
-        "history": history,
+        "invoices": invoices,
+        "payments": payments,
         "message": request.session.get("payment_message"),
         "error": request.session.get("payment_error"),
     }
@@ -97,3 +101,11 @@ def pay_dues(request):
                 data['error'] = e.value
 
     return render(request, 'rink/dues_pay.html', data)
+
+@login_required
+def profile(request):
+    data = {
+        'user_short_name': request.user.get_short_name(),
+    }
+    return render(request, 'rink/profile.html', data)
+
