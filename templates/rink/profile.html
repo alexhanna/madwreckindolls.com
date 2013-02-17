@@ -1,0 +1,17 @@
+{% extends "rink/base.html" %}
+
+{% block content %}
+
+<h2>Hello, {{ user_short_name }}</h2>
+
+<br>
+
+<button class="btn" onclick="window.location='{% url "django.contrib.auth.views.password_change" %}';">Change Password</button>
+
+<br>
+<br>
+
+<hr>
+
+
+{% endblock %}
