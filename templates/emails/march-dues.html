@@ -1,0 +1,32 @@
+{% extends "emails/base.html" %}
+{% block content %}
+<br>
+Hello {{ skater_short_name }},<br>
+<br>
+Two things in this email.<br>
+<br>
+Dues are due on (date). Your dues are ${{ skater.balance }}.<br>
+<br>
+We have a new website for paying online and managing your account.<br>
+<br>
+Here's how to access your account:<br>
+<br>
+<a href="https://madwreckindolls.com/rink/">https://madwreckindolls.com/rink/</a><br>
+<br>
+<b>Email:</b> {{ skater.email }}<br>
+<b>Password:</b> {{ new_password }}<br>
+<br>
+Maybe a rundown of future features or a reminder of other ways to pay?<br>
+<br>
+THE POSSIBILITIES ARE ENDLESSSSSSS<br>
+<br>
+If you have any questions or any problems with the website, please email us. It's a work in progress. Also, our web developer is in Europe getting drunk on wine and French cheese (seriously), so crap, you're boned. Sorry!<br>
+<br>
+<b>The Auditor and Trueblood</b><br>
+Admin Co-Chairs<br>
+Mad Wreckin Dolls<br>
+<br>
+
+
+{% endblock %}
+
