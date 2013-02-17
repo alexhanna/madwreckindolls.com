@@ -8,6 +8,7 @@
 AUTH_USER_MODEL = 'accounts.Skater'
 
 SERVER_EMAIL = "administrator@madwreckindolls.com"
+DEFAULT_FROM_EMAIL = "finance@madwreckindolls.com"
 
 LOGIN_URL = "/rink/login/"
 LOGIN_REDIRECT_URL = "/rink/"
