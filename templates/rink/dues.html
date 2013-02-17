@@ -1,0 +1,162 @@
+{% extends "rink/base.html" %}
+
+{% block content %}
+
+<style type="text/css">
+
+div.balance strong {
+    font-size: larger;
+}
+
+</style>
+
+{% if message %}
+<div class="alert alert-success">{{ message|safe }}</div>
+<br>
+{% endif %}
+
+{% if error %}
+<div class="alert alert-error">{{ error|safe }}</div>
+<br>
+{% endif %}
+
+<p class="lead">
+{% if user.balance > 0 %}
+Your current balance is <strong>${{ user.balance }}</strong>.
+{% elif user.balance == 0 %}
+Your current balance is <strong>$0</strong>. You are all paid up.
+{% elif user.balance < 0 %}
+You currently have a dues credit of <strong>${{ user.balance }}</strong>. Neat!
+{% endif %}
+</p>
+
+<br>
+
+{% if user.balance > 0 %}
+<button class="btn btn-success" onclick="$(this).html('- - - - - Processing - - - - - <br>&nbsp;').attr('disabled', 'disabled');$('#process_form').submit();">Pay ${{ user.balance }} Now with Saved Card
+<br>
+{{ user.stripe_card_description }}</button>
+{% endif %}
+
+&nbsp;&nbsp;&nbsp;
+
+<button class="btn btn-primary" onclick="window.location='{% url "rink.views.pay_dues" %}';">
+{% if user.stripe_customer_id != "" %} Update Credit Card Info
+{% else %} Save Credit Card Info
+{% endif %}
+</button>
+
+&nbsp;&nbsp;&nbsp;
+
+{% if user.stripe_customer_id != "" and user.automatic_billing %}
+<button class="btn" onclick="$(this).html('Saving...');$('#autobill').val(0);$('#autopay_form').submit();">Disable Auto-Pay</button>
+{% elif user.stripe_customer_id != "" and not user.automatic_billing %}
+<button class="btn btn-primary" onclick="$(this).html('Saving...');$('#autobill').val(1);$('#autopay_form').submit();">Enable Auto-Pay</button>
+{% endif %}
+
+<br>
+<br>
+<hr>
+<br>
+
+<div class="row">
+    <div class="span7">
+        <!-- payment history -->
+        {% if invoices|length == 0 and payments|length == 0 %}
+        <p class="muted">You don't appear to have any past invoices or payments.</p>
+        {% else %}
+            {% if invoices|length > 0 %}
+        <table class="table table-hover">
+            <caption>Invoices</caption>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Due Date</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <td>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                <tr>
+                    <td>#{{ invoice.id }}</td>
+                    <td>{{ invoice.due_date }}</td>
+                    <td>{{ invoice.description }} </td>
+                    <td>${{ invoice.amount }} </td>
+                    <td>{{ invoice.status }} </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+            {% else %}
+        <p class="muted">You don't appear to have any invoices.</p>
+            {% endif %}
+
+        <hr>
+
+            {% if payments|length > 0 %}
+        <p class="lead">Your Payments</p>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Method</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.date }}</td>
+                    <td>{{ payment.method }}</td>
+                    <td>{{ payment.method_detail }}</td>
+                    <td>${{ payment.amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+            {% else %}
+            <p class="muted">You don't appear to have any payments.</p>
+            {% endif %}
+
+        {% endif %}
+    </div>
+
+   <!--  
+    <div class="span5">
+        {% if upcoming|length > 0 %}
+        <table class="table table-hover">
+            <caption>Upcoming Dues Schedule</caption>
+            <thead>
+                <tr>
+                    <th>Due Date</th>
+                    <th>Period</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>3/3/13</td>
+                    <td>February Dues (1/2 - 1/3)</td>
+                </tr>
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    -->
+    
+</div>
+
+
+    <form action="{% url 'rink.views.autopay_dues' %}" method="post" id="autopay_form">
+        {% csrf_token %}
+        <input type="hidden" name="autobill" id="autobill" value="">
+    </form>
+
+    <form action="{% url 'rink.views.process_dues' %}" method="post" id="process_form">
+        {% csrf_token %}
+    </form>
+
+
+{% endblock %}

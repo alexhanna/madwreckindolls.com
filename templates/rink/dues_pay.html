@@ -1,0 +1,176 @@
+{% extends "rink/base.html" %}
+
+{% block head %}
+<script src="https://js.stripe.com/v1/"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    Stripe.setPublishableKey('{{ STRIPE_PUBLISHABLE }}');
+
+    $('#cc_button').click(function() {
+
+        $(this).attr('disabled', 'disabled').html('Processing....');
+        $('.cc_errors').html('').hide();
+
+        var errors = [];
+
+        // Name on Card
+        if($('#cc_name').val() == '')
+            errors.push("Name on Card is required.");
+
+        // Validate credit card number
+        if(!Stripe.validateCardNumber($('#cc_num').val()))
+            errors.push("Credit Card number appears to be invalid. Please check that it is correct.")
+
+        // Validate expiry dates
+        if($('#cc_month').val() == "")
+            errors.push("Expiry month is required.");
+        if($('#cc_year').val() == "")
+            errors.push("Expiry year is required.");
+        if($('#cc_month').val() != "" && $('#cc_year').val() != "" &&  !Stripe.validateExpiry($('#cc_month').val(), $('#cc_year').val()))
+            errors.push("Expiration year or month is not correct.");
+
+        // Validate CVC
+        if(!Stripe.validateCVC($('#cc_cvc').val()))
+            errors.push("CVC code is not valid. It's usually the 3 or 4 digit number on the front or back of your card.");
+
+        if(errors.length == 0)
+        {
+            // Attempt to submit the card to stripe
+            Stripe.createToken({
+                name: $('#cc_name').val(),
+                number: $('#cc_num').val(),
+                cvc: $('#cc_cvc').val(),
+                exp_month: $('#cc_month').val(),
+                exp_year: $('#cc_year').val()
+            }, stripeResponseHandler);
+        }
+        else
+        {
+            // Validation errors
+            $('.cc_errors').show().html('There appears to be a problem with the credit card:<ul>');
+
+            for(var i = 0; i < errors.length; i++)
+                $('.cc_errors').append('<li>' + errors[i] + '</li>');
+
+            $('.cc_errors').append('</ul>');
+
+            $(this).html('Try Again - Pay Now').removeAttr('disabled');
+        }
+    });
+});
+
+
+function stripeResponseHandler(status, response) 
+{
+    if (response.error) 
+    {
+        $('.cc_errors').show().html('There appears to be a problem processing your credit card:<ul>');
+        $('.cc_errors').append('<li>' + response.error.message + '</li>');
+        $('.cc_errors').append('</ul>');
+        $('#cc_button').html('Try Again - Pay Now').removeAttr('disabled');
+    }        
+    else 
+    {
+        $('#cc_button').html('Almost done....');
+
+        // Copy automatic billing checkbox
+        if($('#cc_automatic').is(":checked"))
+            $('#autobill').val("1");
+
+        $('#stripe_token').val(response.id);
+
+        $('#stripe_form').submit();
+    }
+}
+
+</script>
+{% endblock %}
+
+
+{% block content %}
+
+<ul class="breadcrumb">
+    <li><a href="{% url 'rink.views.dues' %}">Dues</a> <span class="divider">/</span></li>
+    <li class="active">Credit Card Payments</li>
+</ul>
+
+<div class="row">
+    <div class="span7">
+
+{% if user.balance <= 0 %}
+<div class="alert">
+    <strong>You don't owe any dues right now.</strong> However, you can use the form below to save a new credit card for automatic payments. We won't be charging any money to the card.
+</div>
+{% else %}
+<p class="lead">
+Your current balance is <strong>${{ user.balance }}</strong>.
+</p>
+{% endif %}
+
+    <div class="cc_errors {% if not cc_error %}hide{% endif %} alert alert-error">{% if cc_error %}{{ cc_error }}{% endif %}</div>
+
+    <form class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label" for="cc_name">Name on Card</label>
+            <div class="controls">
+                <input type="text" id="cc_name">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="cc_num">Card Number</label>
+            <div class="controls">
+                <input type="text" id="cc_num" maxlength="16" style="width:140px;">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="cc_exp">Expiration</label>
+            <div class="controls">
+                <input type="text" maxlength="2" name="cc_month" id="cc_month" placeholder="MM" style="width:25px;">
+                &nbsp;/&nbsp;
+                <input type="text" maxlength="4" name="cc_year" id="cc_year" placeholder="YYYY" style="width:44px;">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="cc_cvc">CVC</label>
+            <div class="controls">
+                <input type="text" id="cc_cvc" style="width:40px;" maxlength="4">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="checkbox" style="margin-left:150px;">
+                <input type="checkbox" id="cc_automatic" style="font-size:20px;" {% if user.automatic_billing %}checked="checked"{% endif %}>
+                <b>Automatically charge this card for dues on the due date each month.</b><br>
+            </label>
+        </div>
+        <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+                <button type="button" class="btn btn-primary" id="cc_button">Pay Now - ${{ user.balance }}</button>
+            </div>
+        </div>
+    </form>
+
+    <br>
+    <br>
+    <br>
+    <br>
+        
+    <div class="alert alert-info">
+                    <img src="/images/lock.png" alt="Secure!"> Your card info is sent securely. It's sent directly to our payment provider <a href="http://stripe.com" target="_blank"><em>(Stripe.com)</em></a> and never actually touches our server. Neat!
+     </div>
+
+
+
+    </div>
+</div>
+
+
+    <!-- This form is the one that actually submits in the event that saving the card to stripe is successful. -->
+    <form action="{% url 'rink.views.pay_dues' %}" method="post" id="stripe_form">
+        {% csrf_token %}
+        <input type="hidden" name="stripe_token" id="stripe_token" value="">
+        <input type="hidden" name="autobill" id="autobill" value="">
+    </form>
+
+
+{% endblock %}
