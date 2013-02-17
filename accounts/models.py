@@ -617,6 +617,7 @@ class Invoice(models.Model):
     class Meta:
         verbose_name = "Invoice"
         verbose_name_plural = "Invoices"
+        ordering = [ "-invoice_date" ]
     
     def __unicode__(self):
         return self.skater.derby_name + " - " + self.description + " - $" + str(self.amount)
@@ -725,6 +726,7 @@ class Receipt(models.Model):
     class Meta:
         verbose_name = "Payment Receipt"
         verbose_name_plural = "Payment Receipts"
+        ordering = [ "-date" ]
 
     def __unicode__(self):
         return self.skater.derby_name + " - " + self.description + " - $" + str(self.amount)
