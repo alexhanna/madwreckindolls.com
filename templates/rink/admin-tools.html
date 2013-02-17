@@ -1,0 +1,63 @@
+{% extends "rink/base.html" %}
+
+{% block content %}
+
+<style type="text/css">
+
+.accounting-summary {
+    margin: 20px 10px 20px 10px;
+}
+
+.accounting-summary li {
+    font-size: larger;
+    display: inline;
+    margin: 16px 60px 16px 0;
+}
+
+.accounting-summary li a {
+    font-size: 50px;
+    margin-right: 10px;
+}
+.accounting-summary li a:hover {
+    text-decoration: none;
+}
+
+.paid a {
+    color: green;
+    border-bottom: 1px dashed green;
+}
+
+.unpaid a {
+    color: red;
+    border-bottom: 1px dashed red;
+}
+
+.auto a {
+    color: blue;
+    border-bottom: 1px dashed blue;
+}
+
+</style>
+
+
+
+<h4>Accounting and Payments</h4>
+
+<ul class="accounting-summary">
+    <li class="paid"><a href="">{{ num_paid }}</a> paid</li>
+    <li class="unpaid"><a href="">{{ num_unpaid }}</a> unpaid</li>
+    <li class="auto"><a href="">{{ num_autopay }}</a> autopay</li>
+</ul>
+
+<hr>
+<br>
+
+<h4>User Data and Spreadsheet Downloads</h4>
+
+NOTHING IS HERE YET, OKAY? <span class="muted">gosh...</span>
+
+<br>
+<hr>
+
+
+{% endblock %}

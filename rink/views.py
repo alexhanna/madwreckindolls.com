@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from rink.forms import PaymentForm, AutopayForm, ProcessForm
 from mwd import settings
-from accounts.models import PaymentError, Invoice, Receipt, SkateSessionPaymentSchedule
+from accounts.models import PaymentError, Invoice, Receipt, SkateSessionPaymentSchedule, Skater
 from datetime import date
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -109,3 +109,16 @@ def profile(request):
     }
     return render(request, 'rink/profile.html', data)
 
+@login_required
+def admin_tools(request):
+    if not request.user.is_admin:
+        return render(request, 'rink/access_denied.html')
+
+    data = {
+        "num_paid": Skater.objects.filter(balance__lte=0, automatic_billing__exact=0).count(),
+        "num_unpaid": Skater.objects.filter(balance__gt=0, automatic_billing__exact=0).count(),
+        "num_autopay": Skater.objects.filter(automatic_billing__exact=1).count(),
+    }
+
+
+    return render(request, 'rink/admin-tools.html', data)

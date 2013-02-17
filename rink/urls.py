@@ -14,6 +14,8 @@ urlpatterns = patterns('',
                        (r'^dues/process-dues$', 'rink.views.process_dues'),
                        (r'^profile$', 'rink.views.profile'),
 
+                       (r'^admin-tools$', 'rink.views.admin_tools'),
+
                        (r'^login/$', 
                         'django.contrib.auth.views.login', 
                         {'template_name': 'rink/login.html'}),
