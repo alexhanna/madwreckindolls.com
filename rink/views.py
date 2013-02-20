@@ -109,16 +109,56 @@ def profile(request):
     }
     return render(request, 'rink/profile.html', data)
 
+
+
+
+"""
+ADMIN TOOLS
+"""
+
+def get_paid_stats():
+    data = {
+        "num_paid": Skater.objects.filter(balance__lte=0).count(),
+        "num_unpaid": Skater.objects.filter(balance__gt=0, automatic_billing__exact=0).count(),
+        "num_autopay": Skater.objects.filter(automatic_billing__exact=1).count(),
+        "num_all": Skater.objects.exclude(status__name__exact="inactive").count(),
+    }
+
+    return data
+    
+def get_filtered_skaters(status="all"):
+    if status == "all":
+        return Skater.objects.order_by("derby_name", "last_name").all()
+    if status == "paid":
+        return Skater.objects.filter(balance__lte=0).order_by("derby_name", "last_name").all()
+    if status == "unpaid":
+        return Skater.objects.filter(balance__gt=0, automatic_billing__exact=0).order_by("derby_name", "last_name").all()
+    if status == "autopay":
+        return Skater.objects.filter(automatic_billing__exact=1).order_by("derby_name", "last_name").all()
+    return []
+
 @login_required
 def admin_tools(request):
     if not request.user.is_admin:
         return render(request, 'rink/access_denied.html')
 
-    data = {
-        "num_paid": Skater.objects.filter(balance__lte=0, automatic_billing__exact=0).count(),
-        "num_unpaid": Skater.objects.filter(balance__gt=0, automatic_billing__exact=0).count(),
-        "num_autopay": Skater.objects.filter(automatic_billing__exact=1).count(),
-    }
-
+    data = get_paid_stats()
 
     return render(request, 'rink/admin-tools.html', data)
+
+@login_required
+def billing_tools(request, billing_filter):
+    data = get_paid_stats()
+
+    if billing_filter is None:
+        billing_filter = "unpaid"
+    data["filter"] = billing_filter
+
+    data["skaters"] = get_filtered_skaters(billing_filter)
+
+    return render(request, 'rink/admin-billing-tools.html', data)
+
+
+
+
+

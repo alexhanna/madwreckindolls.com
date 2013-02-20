@@ -44,9 +44,9 @@
 <h4>Accounting and Payments</h4>
 
 <ul class="accounting-summary">
-    <li class="paid"><a href="">{{ num_paid }}</a> paid</li>
-    <li class="unpaid"><a href="">{{ num_unpaid }}</a> unpaid</li>
-    <li class="auto"><a href="">{{ num_autopay }}</a> autopay</li>
+    <li class="paid"><a href="{% url "rink.views.billing_tools" %}">{{ num_paid }}</a> paid</li>
+    <li class="unpaid"><a href="{% url "rink.views.billing_tools" %}">{{ num_unpaid }}</a> unpaid</li>
+    <li class="auto"><a href="{% url "rink.views.billing_tools" %}">{{ num_autopay }}</a> autopay</li>
 </ul>
 
 <hr>

@@ -1,0 +1,54 @@
+{% extends "rink/base.html" %}
+
+{% block content %}
+
+<ul class="breadcrumb">
+    <li><a href="{{ rink.views.admin_tools }}">Admin Tools</a> <span class="divider">/</span></li>
+    <li class="active">Billing</li>
+</ul>
+
+<ul class="nav nav-pills">
+    
+    <li{% if filter == "unpaid" %} class="active"{% endif %}>
+        <a href="{% url "rink.views.billing_tools" billing_filter="unpaid" %}">Unpaid <span class="badge">{{ num_unpaid }}</a>
+    </li>
+    
+    <li{% if filter == "paid" %} class="active"{% endif %}>
+        <a href="{% url "rink.views.billing_tools" billing_filter="paid" %}">Paid <span class="badge">{{ num_paid }}</a>
+    </li>
+    
+    <li{% if filter == "autopay" %} class="active"{% endif %}>
+        <a href="{% url "rink.views.billing_tools" billing_filter="autopay" %}">Autopay <span class="badge">{{ num_autopay }}</span></a>
+    </li>
+    
+    <li{% if filter == "all" %} class="active"{% endif %}>
+        <a href="{% url "rink.views.billing_tools" billing_filter="all" %}">All Skaters <span class="badge">{{ num_all }}</span></a>
+    </li>
+</ul>
+
+<div class="row">
+<div class="span8">
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Real Name</th>
+            <th>Balance</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for skater in skaters %}
+        <tr>
+            <td>{{ skater.derby_name }}</td>
+            <td>{{ skater.first_name }} {{ skater.last_name }}</td>
+            <td>${{ skater.balance }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div>
+</div>
+
+{% endblock %}
