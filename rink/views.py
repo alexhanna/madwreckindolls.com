@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from rink.forms import PaymentForm, AutopayForm, ProcessForm
+from rink.forms import PaymentForm, AutopayForm, ProcessForm, AdminSkaterStatusForm
 from mwd import settings
-from accounts.models import PaymentError, Invoice, Receipt, SkateSessionPaymentSchedule, Skater
+from accounts.models import PaymentError, Invoice, Receipt, SkateSessionPaymentSchedule, Skater, SkaterStatus
 from datetime import date
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -148,6 +148,9 @@ def admin_tools(request):
 
 @login_required
 def billing_tools(request, billing_filter):
+    if not request.user.is_admin:
+        return render(request, 'rink/access_denied.html')
+
     data = get_paid_stats()
 
     if billing_filter is None:
@@ -157,6 +160,43 @@ def billing_tools(request, billing_filter):
     data["skaters"] = get_filtered_skaters(billing_filter)
 
     return render(request, 'rink/admin-billing-tools.html', data)
+
+@login_required
+def skater_tools(request, skater_id):
+    if not request.user.is_admin:
+        return render(request, 'rink/access_denied.html')
+    
+    try:
+        skater = Skater.objects.get(pk=skater_id)
+    except Skater.DoesNotExist:
+        return render(request, 'rink/access_denied.html')
+    
+    if request.method == 'POST':
+        form = AdminSkaterStatusForm(request.POST)
+        if form.is_valid():
+            try:
+                new_status = SkaterStatus.objects.get(pk=form.cleaned_data["status"])
+            except SkaterStatus.DoesNotExist:
+                return render(request, 'rink/admin_error.html', {"error", "Skater Status does not appear to exist." })
+                
+            skater.status = new_status
+            skater.save()
+            request.session["success_message"] = "<b>Saved new status.</b>" 
+            return HttpResponseRedirect(reverse('rink.views.skater_tools', kwargs={"skater_id": skater.id } ))
+            
+
+    data = {
+        "skater": skater,
+        "skater_statuses": SkaterStatus.objects.all(),
+    }
+
+    if request.session.get("success_message"):
+        data["success_message"] = request.session.get("success_message")
+        del request.session['success_message']
+
+    return render(request, 'rink/admin-skater-tools.html', data)
+
+
 
 
 

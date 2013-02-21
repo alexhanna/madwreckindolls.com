@@ -1,0 +1,52 @@
+{% extends "rink/base.html" %}
+
+{% block content %}
+
+{% if success_message %}
+<div class="alert alert-success">
+{{ success_message|safe }}
+</div>
+{% endif %}
+
+<h3>{{ skater }}</h3>
+<div>
+    <a href="mailto:{{ skater.email }}">{{ skater.email }}</a>
+</div>
+
+<br>
+<hr>
+<br>
+
+<h4>Payment Info</h4>
+
+<p class="lead">
+{% if skater.balance == 0 %}
+{{ skater }} has a balance of <b>zero</b>.
+{% else %}
+{{ skater }} has a balance of <b>${{ skater.balance }}</b>.
+{% endif %}
+</p>
+
+<br>
+<hr>
+<br>
+
+<h4>Skater Status</h4>
+
+<p class="lead">Current status is {{ skater.status }} and owes <b>${{ skater.status.dues_amount }} per billing period.</b></p>
+
+Change Status: 
+<form action="" method="post" id="status_form">
+{% csrf_token %}
+<select name="status" onchange="$('#status_form').submit()" style="font-size:smaller">
+    {% for status in skater_statuses %}
+    <option value="{{ status.id }}"{% if status == skater.status %} selected="selected"{% endif %}>{{ status }}</option>
+    {% endfor %}
+</select>
+</form>
+
+<br>
+<hr>
+<br>
+
+{% endblock %}

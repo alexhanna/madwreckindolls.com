@@ -16,6 +16,7 @@ urlpatterns = patterns('',
 
                        (r'^admin-tools$', 'rink.views.admin_tools'),
                        (r'^admin-tools/billing/(?P<billing_filter>all|paid|unpaid|autopay)?$', 'rink.views.billing_tools'),
+                       (r'^admin-tools/skaters/(?P<skater_id>\d+)$', 'rink.views.skater_tools'),
 
                        (r'^login/$', 
                         'django.contrib.auth.views.login', 

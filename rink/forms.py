@@ -19,3 +19,9 @@ class PaymentForm(forms.Form):
         required = True,
     )
 
+
+class AdminSkaterStatusForm(forms.Form):
+    status = forms.CharField(
+        max_length=32,
+        required = True,
+    )
