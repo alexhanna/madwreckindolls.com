@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from rink.forms import PaymentForm, AutopayForm, ProcessForm, AdminSkaterStatusForm
+from rink.forms import PaymentForm, AutopayForm, ProcessForm, AdminSkaterStatusForm, AdminSkaterPaymentForm
 from mwd import settings
 from accounts.models import PaymentError, Invoice, Receipt, SkateSessionPaymentSchedule, Skater, SkaterStatus
 from datetime import date
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from datetime import datetime
 
 @login_required
 def index(request):
@@ -193,11 +194,51 @@ def skater_tools(request, skater_id):
     if request.session.get("success_message"):
         data["success_message"] = request.session.get("success_message")
         del request.session['success_message']
+    
+    if request.session.get("payment_success"):
+        data["payment_success"] = request.session.get("payment_success")
+        del request.session['payment_success']
+    
+    if request.session.get("payment_error"):
+        data["payment_error"] = request.session.get("payment_error")
+        del request.session['payment_error']
 
     return render(request, 'rink/admin-skater-tools.html', data)
 
 
+@login_required
+def skater_tools_payment(request, skater_id):
+    if not request.user.is_admin:
+        return render(request, 'rink/access_denied.html')
+    
+    try:
+        skater = Skater.objects.get(pk=skater_id)
+    except Skater.DoesNotExist:
+        return render(request, 'rink/access_denied.html')
+    
+    if request.method == 'POST':
+        form = AdminSkaterPaymentForm(request.POST)
+        if form.is_valid():
+            receipt = Receipt(
+                    skater = skater,
+                    amount = float(form.cleaned_data["amount"]),
+                    fee = 0,
+                    method = form.cleaned_data["method"],
+                    method_detail = form.cleaned_data["notes"],
+                    date = datetime.now(),
+                )
+            receipt.save()
 
+            skater.balance = skater.balance - form.cleaned_data["amount"]
+            skater.save()
+
+            skater.set_unpaid_invoices_paid(form.cleaned_data["amount"]) 
+
+            request.session["payment_status"] = "<b>Payment Received</b> - " + form.cleaned_data["method"] + " of $" + str(form.cleaned_data["amount"])
+        else:
+            request.session["payment_error"] = "<b>Invalid payment</b> - You may have missed something on the form. Please try again."
+
+    return HttpResponseRedirect(reverse('rink.views.skater_tools', kwargs={"skater_id": skater.id } ))
 
 
 

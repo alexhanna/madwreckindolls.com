@@ -14,20 +14,70 @@
 </div>
 
 <br>
-<hr>
 <br>
-
-<h4>Payment Info</h4>
 
 <p class="lead">
 {% if skater.balance == 0 %}
-{{ skater }} has a balance of <b>zero</b>.
+Balance is <b>zero</b>.
 {% else %}
-{{ skater }} has a balance of <b>${{ skater.balance }}</b>.
+Balance is <b>${{ skater.balance }}</b>.
 {% endif %}
 </p>
 
-<br>
+<hr>
+
+<div class="row">
+<div class="span1">
+</div>
+<div class="span5">
+
+{% if payment_success %}
+<div class="alert alert-success">
+{{ payment_success|safe }}
+</div>
+{% endif %}
+
+{% if payment_error %}
+<div class="alert alert-error">
+{{ payment_error|safe }}
+</div>
+{% endif %}
+
+<form action="{% url "rink.views.skater_tools_payment" skater_id=skater.id %}" method="post" class="form-horizontal">
+{% csrf_token %}
+        <div class="control-group">
+            <label class="control-label" for="method">Payment Method:</label>
+            <div class="controls">
+                <select name="method">
+                    <option value=""> - - - - - - - - </option>
+                    <option value="cash">Cash</option>
+                    <option value="check">Check</option>
+                    <option value="square">Square (credit card)</option>
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="description">Payment Notes:</label>
+            <div class="controls">
+                <input type="text" name="description">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="description">Amount ($):</label>
+            <div class="controls">
+                <input type="text" name="amount" value="{{ skater.status.dues_amount }}" style="width:50px;">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+                <button type="submit" class="btn btn-primary">Add Payment</button>
+            </div>
+        </div>
+</form>
+</div>
+</div>
+
 <hr>
 <br>
 

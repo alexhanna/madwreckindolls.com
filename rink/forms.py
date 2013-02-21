@@ -25,3 +25,18 @@ class AdminSkaterStatusForm(forms.Form):
         max_length=32,
         required = True,
     )
+
+class AdminSkaterPaymentForm(forms.Form):
+    method = forms.CharField(
+        max_length=32,
+        required=True,
+    )
+
+    notes = forms.CharField(
+        max_length=128,
+        required=False,
+    )
+
+    amount = forms.IntegerField(
+        required=True,
+    )
