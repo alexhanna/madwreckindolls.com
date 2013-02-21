@@ -234,7 +234,7 @@ def skater_tools_payment(request, skater_id):
 
             skater.set_unpaid_invoices_paid(form.cleaned_data["amount"]) 
 
-            request.session["payment_status"] = "<b>Payment Received</b> - " + form.cleaned_data["method"] + " of $" + str(form.cleaned_data["amount"])
+            request.session["payment_success"] = "<b>Payment Received</b> - " + form.cleaned_data["method"] + " of $" + str(form.cleaned_data["amount"])
         else:
             request.session["payment_error"] = "<b>Invalid payment</b> - You may have missed something on the form. Please try again."
 

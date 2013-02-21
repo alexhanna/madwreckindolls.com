@@ -37,6 +37,7 @@ class AdminSkaterPaymentForm(forms.Form):
         required=False,
     )
 
-    amount = forms.IntegerField(
+    amount = forms.DecimalField(
+        decimal_places=2,
         required=True,
     )
