@@ -696,7 +696,7 @@ def generate_scheduled_invoice(skater, schedule, description = False):
         pass
 
     if not description:
-        description = "Dues Payment - " + str(schedule)
+        description = "Dues - " + str(schedule)
 
     invoice = Invoice.objects.create(
                                 skater = skater,
