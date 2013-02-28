@@ -11,13 +11,13 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         billing_period = 2
-        limit = 5
+        limit = 1
         count = 0
 
         schedule = SkateSessionPaymentSchedule.objects.get(pk=billing_period)
 
         #skaters = Skater.objects.all()
-        skaters = Skater.objects.filter(pk=88)
+        skaters = Skater.objects.filter(pk=1)
 
         for skater in skaters:
             
@@ -58,20 +58,20 @@ class Command(BaseCommand):
                             "Mad Wreckin' Dolls March Dues",
                             html,
                             settings.FROM_EMAIL,
-                            [ skater.email ],
+                            # [ skater.email ],
+                            [ "dan@silvers.net" ],
                             [ settings.FROM_EMAIL ],
                             headers = {
                                 'Reply-To' : settings.FROM_EMAIL,
                                 'CC' : "finance@madwreckindolls.com",
                                 'Content-Type' : 'text/html'
                             },
-                 )
-
-                 msg.content_subtype = "html"
-                 msg.send(fail_silently = False)
-
-
-                 count = count + 1
-                 if count >= limit:
+                )
+                
+                msg.content_subtype = "html"
+                msg.send(fail_silently = False)
+                
+                count = count + 1
+                if count >= limit:
                      return
 

@@ -38,7 +38,7 @@ class Command(BaseCommand):
 
                         skater.save()
 
-                        html = render_to_string('emails/reg-lottery-invite.html',
+                        html = render_to_string('emails/pre-reg-invite.html',
                             {
                                 'skater' : skater,
                                 'skater_short_name': skater.get_short_name(),
