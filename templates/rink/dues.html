@@ -32,7 +32,7 @@ You currently have a dues credit of <strong>${{ user.balance }}</strong>. Neat!
 
 <br>
 
-{% if user.balance > 0 %}
+{% if user.balance > 0 and user.stripe_customer_id != '' %}
 <button class="btn btn-success" onclick="$(this).html('- - - - - Processing - - - - - <br>&nbsp;').attr('disabled', 'disabled');$('#process_form').submit();">Pay ${{ user.balance }} Now with Saved Card
 <br>
 {{ user.stripe_card_description }}</button>
@@ -42,7 +42,8 @@ You currently have a dues credit of <strong>${{ user.balance }}</strong>. Neat!
 
 <button class="btn btn-primary" onclick="window.location='{% url "rink.views.pay_dues" %}';">
 {% if user.stripe_customer_id != "" %} Update Credit Card Info
-{% else %} Save Credit Card Info
+{% elif user.balance > 0 %} Pay with Credit Card
+{% else %} Update Credit Card Info
 {% endif %}
 </button>
 
