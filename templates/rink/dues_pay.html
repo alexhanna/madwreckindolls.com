@@ -107,7 +107,7 @@ Your current balance is <strong>${{ user.balance }}</strong>.
 </p>
 {% endif %}
 
-    <div class="cc_errors {% if not cc_error %}hide{% endif %} alert alert-error">{% if cc_error %}{{ cc_error }}{% endif %}</div>
+    <div class="cc_errors {% if not payment_error %}hide{% endif %} alert alert-error">{% if payment_error %}{{ payment_error }}{% endif %}</div>
 
     <form class="form-horizontal">
         <div class="control-group">

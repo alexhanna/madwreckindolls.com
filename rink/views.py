@@ -99,7 +99,7 @@ def pay_dues(request):
 
                 return HttpResponseRedirect(reverse('rink.views.dues'))
             except PaymentError, e:
-                data['error'] = e.value
+                data['payment_error'] = e.value
 
     return render(request, 'rink/dues_pay.html', data)
 

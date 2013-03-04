@@ -205,6 +205,11 @@ class Skater(AbstractBaseUser):
 
                 return cust
 
+            except stripe.CardError, e:
+                body = e.json_body
+                err = body['error']
+                raise PaymentError("An error occured with your card. " + str(err['message']) + ".")
+
             except stripe.InvalidRequestError:
                 pass
 
