@@ -100,6 +100,8 @@ def pay_dues(request):
                 return HttpResponseRedirect(reverse('rink.views.dues'))
             except PaymentError, e:
                 data['payment_error'] = e.value
+        else:
+            data['payment_error'] = "There was a problem processing the payment form. This shouldn't happen. Try again and contact us if you still have a problem."
 
     return render(request, 'rink/dues_pay.html', data)
 

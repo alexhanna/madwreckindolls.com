@@ -16,7 +16,7 @@ class PaymentForm(forms.Form):
     )
 
     autobill = forms.BooleanField(
-        required = True,
+        required = False,
     )
 
 
