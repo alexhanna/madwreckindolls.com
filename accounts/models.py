@@ -304,12 +304,15 @@ class Skater(AbstractBaseUser):
             return str(invoices[0])
 
         """ Multiple unpaid invoices """
+        """
         invoices_desc = []
 
         for inv in invoices:
-            invoices_desc.push('#' + str(inv.id))
+            invoices_desc.append('#' + str(inv.id))
 
         return "Invoices " + ', '.join(invoices_desc)
+        """
+        return ""
 
 
     """ Mark invoices as paid
