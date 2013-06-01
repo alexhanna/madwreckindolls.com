@@ -1,0 +1,46 @@
+{% extends "emails/base.html" %}
+{% block content %}
+<br>
+Hello {{ skater_short_name }},<br>
+<br>
+All dues payments are due on the 8th of the month.<br>
+<br>
+<b>SUMMER BILLING NOTE:</b> If you elected to pay for all of summer session in one payment, we've adjusted your balance below accordingly. If you have any questions, feel free to reply to this email and we'll get you squared away.<br>
+<br>
+<br>
+{% if skater.balance > 0 %}
+Your balance is <b>${{ skater.balance }}</b>.<br>
+{% else %}
+It doesn't appear that you owe any dues currently. (We have you in the "{{ skater.status.name }}" group.)<br>
+{% endif %}
+<br>
+
+{% if skater.balance > 0 and skater.automatic_billing and skater.stripe_customer_id != "" %}
+<b>You have automatic billing enabled. We will attempt to charge your card automatically for the balance above on the 8th of the month.</b><br>
+<br>
+{% endif %}
+
+<a style="font-size:18px;font-weight:bold;" href="https://madwreckindolls.com/rink/">Click to pay your MWD dues online:</a><br>
+<br>
+<a href="https://madwreckindolls.com/rink/">https://madwreckindolls.com/rink/</a><br>
+
+<br>
+<br>
+
+If chose not to pay online, you can pay The Auditor in person with cash, checks, or credit card. You can also mail a check to The Auditor. Additionally, there is also a MWD mailbox located at The Auditor's, you can place an envelope with your name and payment (cash or check).<br>
+<br>
+Heidi Silvers<br>
+c/o Mad Wreckin' Dolls<br>
+1 Loretta Ct<br>
+Madison, WI 53716<br>
+<br>
+Thanks!<br>
+<br>
+<b>The Auditor</b><br>
+Admin Chair<br>
+Mad Wreckin' Dolls<br>
+<br>
+
+
+{% endblock %}
+
