@@ -694,7 +694,7 @@ class Invoice(models.Model):
 " Create an invoice for a skater during a specified scheduling period.
 " schedule.get_dues_amount will automatically determine the amount that should be billed.
 """
-def generate_scheduled_invoice(skater, schedule, description = False):
+def generate_scheduled_invoice(skater, schedule, description = False, amount = -1):
 
     """ Check to see if the invoice already exists for this skater """
     try:
@@ -703,8 +703,13 @@ def generate_scheduled_invoice(skater, schedule, description = False):
     except Invoice.DoesNotExist:
         pass
 
+    """ Custom Description """
     if not description:
         description = "Dues - " + str(schedule)
+
+    """ Custom Dues Amount """
+    if amount == -1:
+        amount = schedule.get_dues_amount(skater)
 
     invoice = Invoice.objects.create(
                                 skater = skater,
@@ -712,13 +717,10 @@ def generate_scheduled_invoice(skater, schedule, description = False):
                                 invoice_date = datetime.now(),
                                 due_date = schedule.due_date,
                                 description = description,
-                                amount = schedule.get_dues_amount(skater)
+                                amount = amount
                             )
     
-    b = skater.balance
-    a = invoice.amount
-
-    skater.balance = skater.balance + invoice.amount
+    skater.balance = skater.balance + amount
     skater.save()
 
     return invoice
