@@ -332,8 +332,21 @@ class Skater(AbstractBaseUser):
 
 
 
+    DERBY_LAST_LEVELS = (
+        ('New', 'I am new to Derby'),
+        ('101', '101'),
+        ('151', '151'),
+        ('201', '201'),
+        ('251', '251'),
+    )
 
-
+    DERBY_HOPE_LEVELS = (
+        ('Not sure', 'Not sure'),
+        ('101', '101'),
+        ('151', '151'),
+        ('201', '201'),
+        ('251', '251'),
+    )
 
 
     email = models.EmailField(
@@ -410,6 +423,18 @@ class Skater(AbstractBaseUser):
         "Date of Birth",
         blank = True,
         null = True,
+    )
+
+    last_level = models.ChoiceField(
+        max_length = 8,
+        blank = True,
+        choices = DERBY_LAST_LEVELS,
+    )
+
+    hope_level = models.ChoiceField(
+        max_length = 8,
+        blank = True,
+        choices = DERBY_HOPE_LEVELS,
     )
     
     emergency_contact = models.CharField(
