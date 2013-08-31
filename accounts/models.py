@@ -333,6 +333,7 @@ class Skater(AbstractBaseUser):
 
 
     DERBY_LAST_LEVELS = (
+        (None, '- - - - - - -'),
         ('New', 'I am new to Derby'),
         ('101', '101'),
         ('151', '151'),
@@ -341,6 +342,7 @@ class Skater(AbstractBaseUser):
     )
 
     DERBY_HOPE_LEVELS = (
+        (None, '- - - - - - -'),
         ('Not sure', 'Not sure'),
         ('101', '101'),
         ('151', '151'),

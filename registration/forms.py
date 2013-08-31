@@ -1,5 +1,6 @@
 from django_localflavor_us.forms import USPhoneNumberField, USZipCodeField
 from django_localflavor_us.us_states import STATE_CHOICES
+from accounts.models import Skater
 from legal.models import LegalDocumentBinder, LegalDocument
 
 from django import forms
@@ -78,6 +79,20 @@ class PersonalForm(forms.Form):
         label = "Derby Number",
         max_length = 50,
         required = False,
+    )
+
+    previous_level = forms.ChoiceField(
+      label = "Derby Experience",
+      help_text = "What level of derby experience do you have?",
+      choices = Skater.DERBY_LAST_LEVELS,
+      required = True,
+    )
+
+    hope_level = forms.ChoiceField(
+      label = "I would prefer...",
+      help_text = "For " + settings.REGISTRATION_SESSION_NAME + ", which level do you hope to be in?",
+      choices = Skater.DERBY_HOPE_LEVELS,
+      required = True,
     )
 
     def __init__(self, *args, **kwargs):
