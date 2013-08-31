@@ -89,6 +89,7 @@ def personal_details(request):
                     'phone': skater.phone,
                     'email': skater.email,
 		    'dob': skater.dob,
+                    'previous_level': skater.last_level,
                 }
             except KeyError:
                 initial_data = {'state': 'WI'}
@@ -145,6 +146,8 @@ def emergency_info(request):
             skater.zip = personal_data['zip']
             skater.phone = personal_data['phone']
             skater.dob = personal_data['dob']
+            skater.last_level = personal_data['previous_level']
+            skater.hope_level = personal_data['hope_level']
 
             skater.emergency_contact = emergency_data['emergency_contact']
             skater.emergency_relationship = emergency_data['emergency_relationship']
@@ -187,6 +190,12 @@ def emergency_info(request):
                 if skater.wftda_number != "":
                     initial_data['wftda_number'] = skater.wftda_number
                     initial_data['wftda_confirm'] = 'yes'
+                    initial_data['emergency_contact'] = skater.emergency_contact
+                    initial_data['emergency_phone'] = skater.emergency_phone
+                    initial_data['emergency_relationship'] = skater.emergency_relationship
+                    initial_data['insurance_provider'] = skater.insurance_provider
+                    initial_data['hosptial_preference'] = skater.hospital
+                    initial_data['allergies'] = skater.medical_details
             except KeyError:
                 pass
             form = EmergencyForm(initial_data)
