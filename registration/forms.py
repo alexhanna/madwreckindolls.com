@@ -83,14 +83,14 @@ class PersonalForm(forms.Form):
 
     previous_level = forms.ChoiceField(
       label = "Derby Experience",
-      help_text = "What level of derby experience do you have?",
+      help_text = "What level of derby experience do you have?<br><a href='https://docs.google.com/document/d/1HfJuTUF4QYCnesFTuTYmw0-W0PvWpoD9rbhYJicIgRA/edit?usp=sharing' target='_blank'>Click to read level descriptions.</a>",
       choices = Skater.DERBY_LAST_LEVELS,
       required = True,
     )
 
     hope_level = forms.ChoiceField(
       label = "I would prefer...",
-      help_text = "For " + settings.REGISTRATION_SESSION_NAME + ", which level do you hope to be in?",
+      help_text = "For " + settings.REGISTRATION_SESSION_NAME + ", which level do you hope to be in?<br><a href='https://docs.google.com/document/d/1HfJuTUF4QYCnesFTuTYmw0-W0PvWpoD9rbhYJicIgRA/edit?usp=sharing' target='_blank'>Click to read level descriptions.</a>",
       choices = Skater.DERBY_HOPE_LEVELS,
       required = True,
     )

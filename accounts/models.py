@@ -335,19 +335,19 @@ class Skater(AbstractBaseUser):
     DERBY_LAST_LEVELS = (
         (None, '- - - - - - -'),
         ('New', 'I am new to Derby'),
-        ('101', '101'),
-        ('151', '151'),
-        ('201', '201'),
-        ('251', '251'),
+        ('101', '101 - Skating Skills'),
+        ('151', '151 - Derby Skills'),
+        ('201', '201 - Derby Strategy'),
+        ('251', '251 - Derby Strategy'),
     )
 
     DERBY_HOPE_LEVELS = (
         (None, '- - - - - - -'),
         ('Not sure', 'Not sure'),
-        ('101', '101'),
-        ('151', '151'),
-        ('201', '201'),
-        ('251', '251'),
+        ('101', '101 - Skating Skills'),
+        ('151', '151 - Derby Skills'),
+        ('201', '201 - Derby Strategy'),
+        ('251', '251 - Derby Strategy'),
     )
 
 
