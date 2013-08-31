@@ -425,13 +425,13 @@ class Skater(AbstractBaseUser):
         null = True,
     )
 
-    last_level = models.ChoiceField(
+    last_level = models.CharField(
         max_length = 8,
         blank = True,
         choices = DERBY_LAST_LEVELS,
     )
 
-    hope_level = models.ChoiceField(
+    hope_level = models.CharField(
         max_length = 8,
         blank = True,
         choices = DERBY_HOPE_LEVELS,
