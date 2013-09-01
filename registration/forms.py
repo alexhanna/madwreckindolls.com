@@ -70,7 +70,7 @@ class PersonalForm(forms.Form):
 
     derby_name = forms.CharField(
         label = "Derby Name",
-        help_text = "Optional. <a href='https://docs.google.com/document/d/18TQ6kMqFep7GIqSn6R9NQcstrnKzaU8KWf8XaSPcZ_4/edit?pli=1' target='_blank'>Here's some information for choosing a name and number.</a>",
+        help_text = "Optional. <a href='https://docs.google.com/document/d/1dItDzn0uwGj2r_NAwsXh8doEpRi4HRtdRzat-ATJs5c/edit?pli=1' target='_blank'>Here's some information for choosing a name and number.</a>",
         max_length = 100,
         required = False,
     )
