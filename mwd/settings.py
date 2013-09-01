@@ -164,6 +164,9 @@ LOGGING = {
     }
 }
 
+
+BOOL_CHOICES = ((True, 'Yes'), (False, 'No'))
+
 try:
     from settings_local import *
 except ImportError:

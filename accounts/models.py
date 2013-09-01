@@ -333,7 +333,7 @@ class Skater(AbstractBaseUser):
 
 
     DERBY_LAST_LEVELS = (
-        (None, '- - - - - - -'),
+        ('', '- - - - - - -'),
         ('New', 'I am new to Derby'),
         ('101', '101 - Skating Skills'),
         ('151', '151 - Derby Skills'),
@@ -342,7 +342,7 @@ class Skater(AbstractBaseUser):
     )
 
     DERBY_HOPE_LEVELS = (
-        (None, '- - - - - - -'),
+        ('', '- - - - - - -'),
         ('Not sure', 'Not sure'),
         ('101', '101 - Skating Skills'),
         ('151', '151 - Derby Skills'),
@@ -482,11 +482,13 @@ class Skater(AbstractBaseUser):
 
     first_aid_certified = models.BooleanField(
         "First Aid Certified",
+        choices = settings.BOOL_CHOICES,
         blank = True,
     )
 
     first_aid_volunteer = models.BooleanField(
         "First Aid Volunteer",
+        choices = settings.BOOL_CHOICES,
         blank = True,
     )
 
