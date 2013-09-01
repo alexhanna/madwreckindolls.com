@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
         count = 1
 
-        #skaters = Skater.objects.filter(pk=88)
+        skaters = Skater.objects.filter(pk=1)
         #skaters = Skater.objects.all()
 
         for skater in skaters:
@@ -27,7 +27,7 @@ class Command(BaseCommand):
                 )
 
             msg = EmailMultiAlternatives(
-                "Mad Wreckin' Dolls 2013 Spring Registration",
+                "Mad Wreckin' Dolls Fall 2013 Registration",
                 html,
                 settings.FROM_EMAIL,
                 [ skater.email ],
@@ -40,7 +40,7 @@ class Command(BaseCommand):
             )
 
             msg.content_subtype = "html"
-            #msg.send(fail_silently = False)
+            msg.send(fail_silently = False)
             
 	    self.stdout.write( str(count) + " OK! " + skater.email )
             count = count + 1
