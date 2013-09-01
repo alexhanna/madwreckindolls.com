@@ -480,6 +480,16 @@ class Skater(AbstractBaseUser):
         blank = True,
     )
 
+    first_aid_certified = models.BooleanField(
+        "First Aid Certified",
+        blank = True,
+    )
+
+    first_aid_volunteer = models.BooleanField(
+        "First Aid Volunteer",
+        blank = True,
+    )
+
     anything_else_registration = models.TextField(
         "Anything else we should know?",
         blank = True,

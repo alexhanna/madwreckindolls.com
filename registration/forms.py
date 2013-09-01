@@ -160,6 +160,21 @@ class EmergencyForm(forms.Form):
         required = True,
         help_text = "Any latex, drug allergies or medical conditions we should know about?<br>If not, just tell us 'none'.",
     )
+
+    first_aid_certified = forms.TypedChoiceField(
+        choices =  (( True, "Yes" ), (False, "No")),
+        widget = forms.RadioSelect,
+        coerce = int,
+        label = "Are you first aid certified?",
+    )
+
+    first_aid_volunteer = forms.TypedChoiceField(
+        choices =  (( True, "Yes" ), (False, "No")),
+        widget = forms.RadioSelect,
+        coerce = int,
+        label = "Interested in being a first aid volunteer?",
+        help_text = "Are you willing to be a helper for first aid during practice or events, if necessary?",
+    )
     
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()

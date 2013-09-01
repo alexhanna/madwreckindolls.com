@@ -263,6 +263,21 @@ $(document).ready(function() {
         });
     }
 
+    if($('#div_id_first_aid_certified')) {
+      $('#div_id_first_aid_certified input').click(function() { 
+        if( ($(this).attr("value")) == "True" ) {
+          $('#div_id_first_aid_volunteer').show();
+        } else {
+          $('#div_id_first_aid_volunteer').hide();
+        }
+      });
+      
+      $('#div_id_first_aid_certified input').click();
+    }
+
+
+
+
     // Legal form textarea
     $('#id_mwd').attr("readonly", "readonly");
 

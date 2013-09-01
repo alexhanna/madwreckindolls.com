@@ -156,6 +156,8 @@ def emergency_info(request):
             skater.insurance_provider = emergency_data['insurance_company']
             skater.hospital = emergency_data['hospital_preference']
             skater.medical_details = emergency_data['allergies']
+            skater.first_aid_certified = emergency_data['first_aid_certified']
+            skater.first_aid_volunteer = emergency_data['first_aid_volunteer']
 
             skater.save()
     
