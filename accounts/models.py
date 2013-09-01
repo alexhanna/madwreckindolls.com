@@ -7,6 +7,7 @@ from mwd import settings
 from mwd.utilities import random_string
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from decimal import *
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^django_localflavor_us\.models\.USStateField"])
@@ -710,6 +711,8 @@ def generate_scheduled_invoice(skater, schedule, description = False, amount = -
     """ Custom Dues Amount """
     if amount == -1:
         amount = schedule.get_dues_amount(skater)
+    else:
+        amount = Decimal(amount)
 
     invoice = Invoice.objects.create(
                                 skater = skater,

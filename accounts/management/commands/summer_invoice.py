@@ -11,23 +11,25 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         
-        month_name = "Summer Session (June)"
+        month_name = "Summer Session (August)"
+        due_date = "Thursday, August 8th"
 
         # 6 - June
         # 7 - July
         # 8 - Aug
-        billing_period = 6
+        billing_period = 8
+
+        schedule = SkateSessionPaymentSchedule.objects.get(pk=billing_period)
 
         count = 0
         for file in args:
           with open(file, 'rb') as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='"')
             for row in reader:
-                count = count + 1
-                if count != 1:
+                    count = count + 1                    
                     name = row[0]
                     email = row[1]
-                    dues = row[2]
+                    amount = row[2]
 
                     try:
                         skater = Skater.objects.get(email__exact=email)
@@ -49,17 +51,17 @@ class Command(BaseCommand):
                         if invoiced:
                             self.stdout.write( str(count) + "\t~~~~ ALREADY INVOICED - " + email + " / " + skater.get_short_name() )
                         else:
-                            generate_scheduled_invoice(skater, schedule)
-                            self.stdout.write( str(count) + "\tOK - " + name + "\t" + email + "\t" + str(amount))
+                            generate_scheduled_invoice(skater, schedule, False, amount)
+                            self.stdout.write( str(count) + "\tOK - " + skater.get_short_name() + "\t" + email + "\t" + str(amount))
 
                             sk = Skater.objects.get(id=skater.id)
-                            self.stdout.write( "$" + str(skater.balance) + "\t" + sk.get_short_name() )
 
 
                             html = render_to_string('emails/summer_invoice.html',
                                 {
                                     'skater' : sk,
                                     'skater_short_name': sk.get_short_name(),
+                                    'due_date' : due_date,
                                 }
                             )
 
