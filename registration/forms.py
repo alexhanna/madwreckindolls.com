@@ -1,5 +1,6 @@
 from django_localflavor_us.forms import USPhoneNumberField, USZipCodeField
 from django_localflavor_us.us_states import STATE_CHOICES
+from accounts.models import Skater
 from legal.models import LegalDocumentBinder, LegalDocument
 
 from django import forms
@@ -69,7 +70,7 @@ class PersonalForm(forms.Form):
 
     derby_name = forms.CharField(
         label = "Derby Name",
-        help_text = "Optional. <a href='https://docs.google.com/document/d/18TQ6kMqFep7GIqSn6R9NQcstrnKzaU8KWf8XaSPcZ_4/edit?pli=1' target='_blank'>Here's some information for choosing a name and number.</a>",
+        help_text = "Optional. <a href='https://docs.google.com/document/d/1dItDzn0uwGj2r_NAwsXh8doEpRi4HRtdRzat-ATJs5c/edit?pli=1' target='_blank'>Here's some information for choosing a name and number.</a>",
         max_length = 100,
         required = False,
     )
@@ -78,6 +79,20 @@ class PersonalForm(forms.Form):
         label = "Derby Number",
         max_length = 50,
         required = False,
+    )
+
+    previous_level = forms.ChoiceField(
+      label = "Derby Experience",
+      help_text = "What level of derby experience do you have?<br><a href='https://docs.google.com/document/d/1HfJuTUF4QYCnesFTuTYmw0-W0PvWpoD9rbhYJicIgRA/edit?usp=sharing' target='_blank'>Click to read level descriptions.</a>",
+      choices = Skater.DERBY_LAST_LEVELS,
+      required = True,
+    )
+
+    hope_level = forms.ChoiceField(
+      label = "I would prefer...",
+      help_text = "For " + settings.REGISTRATION_SESSION_NAME + ", which level do you hope to be in?<br><a href='https://docs.google.com/document/d/1HfJuTUF4QYCnesFTuTYmw0-W0PvWpoD9rbhYJicIgRA/edit?usp=sharing' target='_blank'>Click to read level descriptions.</a>",
+      choices = Skater.DERBY_HOPE_LEVELS,
+      required = True,
     )
 
     def __init__(self, *args, **kwargs):
@@ -144,6 +159,23 @@ class EmergencyForm(forms.Form):
         label = "Allergies and Medical Information",
         required = True,
         help_text = "Any latex, drug allergies or medical conditions we should know about?<br>If not, just tell us 'none'.",
+    )
+
+    first_aid_certified = forms.ChoiceField(
+        choices = settings.BOOL_CHOICES,
+        widget = forms.RadioSelect,
+        initial = False,
+        required = False,
+        label = "Are you first aid certified?",
+    )
+
+    first_aid_volunteer = forms.ChoiceField(
+        choices = settings.BOOL_CHOICES,
+        widget = forms.RadioSelect,
+        initial = False,
+        required = False,
+        label = "Interested in being a first aid volunteer?",
+        help_text = "Are you willing to be a helper for first aid during practice or events, if necessary?",
     )
     
     def __init__(self, *args, **kwargs):

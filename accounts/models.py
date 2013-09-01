@@ -333,8 +333,23 @@ class Skater(AbstractBaseUser):
 
 
 
+    DERBY_LAST_LEVELS = (
+        ('', '- - - - - - -'),
+        ('New', 'I am new to Derby'),
+        ('101', '101 - Skating Skills'),
+        ('151', '151 - Derby Skills'),
+        ('201', '201 - Derby Strategy'),
+        ('251', '251 - Derby Strategy'),
+    )
 
-
+    DERBY_HOPE_LEVELS = (
+        ('', '- - - - - - -'),
+        ('Not sure', 'Not sure'),
+        ('101', '101 - Skating Skills'),
+        ('151', '151 - Derby Skills'),
+        ('201', '201 - Derby Strategy'),
+        ('251', '251 - Derby Strategy'),
+    )
 
 
     email = models.EmailField(
@@ -412,6 +427,18 @@ class Skater(AbstractBaseUser):
         blank = True,
         null = True,
     )
+
+    last_level = models.CharField(
+        max_length = 8,
+        blank = True,
+        choices = DERBY_LAST_LEVELS,
+    )
+
+    hope_level = models.CharField(
+        max_length = 8,
+        blank = True,
+        choices = DERBY_HOPE_LEVELS,
+    )
     
     emergency_contact = models.CharField(
         "Emergency Contact Name", 
@@ -451,6 +478,18 @@ class Skater(AbstractBaseUser):
 
     medical_details = models.TextField(
         "Medical Allergies and Other Info",
+        blank = True,
+    )
+
+    first_aid_certified = models.BooleanField(
+        "First Aid Certified",
+        choices = settings.BOOL_CHOICES,
+        blank = True,
+    )
+
+    first_aid_volunteer = models.BooleanField(
+        "First Aid Volunteer",
+        choices = settings.BOOL_CHOICES,
         blank = True,
     )
 
