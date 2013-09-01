@@ -23,25 +23,16 @@ class Command(BaseCommand):
           with open(file, 'rb') as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='"')
             for row in reader:
-                count = count + 1
-                if count != 1:
-                    email = row[9]
+                    email = row[4]
                     try:
                         skater = Skater.objects.create_user(email, Skater.objects.make_random_password())
                         skater.status = SkaterStatus.objects.get(name__exact = settings.REGISTRATION_INACTIVE_STATUS)
 
-                        skater.first_name = row[0]
-                        skater.last_name = row[1]
-                        skater.derby_name = row[2]
-                        skater.derby_number = row[3]
-                        skater.address1 = row[4]
-                        skater.city = row[5]
-                        skater.state = row[6]
-                        skater.zip = row[7]
-                        skater.phone = row[8]
-                        if row[10] == "":
-                            row[10] = None
-                        skater.dob = row[10]
+                        last_name = row[0]
+                        first_name = row[1]
+
+                        skater.first_name = row[1]
+                        skater.last_name = row[0]
 
                         skater.save()
                         self.stdout.write( str(count) + " OK! " + email )
