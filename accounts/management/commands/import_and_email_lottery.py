@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 Fields in CSV:
 
 0           1           2           3               4           5       6       7    8       9      10
-first_name  last_name   email       phone
+first_name  last_name   email       
 
 
 """
@@ -29,14 +29,28 @@ class Command(BaseCommand):
                 if count != 1:
                     email = row[2]
                     try:
-                        skater = Skater.objects.create_user(email, Skater.objects.make_random_password())
-                        skater.status = SkaterStatus.objects.get(name__exact = settings.REGISTRATION_INACTIVE_STATUS)
+                        skater = Skater.objects.get(email__exact = email)
+                        self.stdout.write( str(count) + " EXISTS ALREADY " + email )
+                    except Skater.DoesNotExist:
+                        skater = False
+                    
+                    if skater is False:
+                        try:
+                            skater = Skater.objects.create_user(email, Skater.objects.make_random_password())
+                            skater.status = SkaterStatus.objects.get(name__exact = settings.REGISTRATION_INACTIVE_STATUS)
 
-                        skater.first_name = row[0]
-                        skater.last_name = row[1]
-                        skater.phone = row[3]
+                            skater.first_name = row[1]
+                            skater.last_name = row[0]
 
-                        skater.save()
+                            skater.save()
+                            self.stdout.write( str(count) + " CREATED ACCOUNT " + email )
+
+                        except:
+                            skater = False
+                            self.stdout.write( str(count) + "OH CRAP ----- Problem importing row: " + email )
+
+
+                    if skater:
 
                         html = render_to_string('emails/pre-reg-invite.html',
                             {
@@ -61,7 +75,5 @@ class Command(BaseCommand):
                         msg.content_subtype = "html"
                         msg.send(fail_silently = False)
 
-                        self.stdout.write( str(count) + " OK! " + email )
+                        self.stdout.write( str(count) + "\t OK! " + email )
 
-                    except:
-                        self.stdout.write( str(count) + " OH CRAP ----- Problem importing row: " + email )
