@@ -14,7 +14,7 @@ from django.db import IntegrityError
 # If pre-registration is going on, only allow existing accounts to access the page for pre-registration
 # Returns False if the user is ineligible for pre-reg
 # Returns True if they are eligible for pre-reg
-def can_pre_reg(request):
+def can_pre_reg(request):    
     if not settings.PRE_REG:
         return True
     try:
@@ -29,6 +29,9 @@ def can_pre_reg(request):
 # STEP ZERO
 # Pre-load skater details for pre-registered person.
 def load_pre_reg(request, uid = False, hash = False):
+
+    if not settings.REG_ENABLED:
+        return render(request, 'registration/reg-disabled.html', data)
 
     data = {
         'mailto' : settings.FROM_EMAIL
@@ -60,6 +63,8 @@ def load_pre_reg(request, uid = False, hash = False):
 # STEP ONE
 # Personal information - Name, address
 def personal_details(request):
+    if not settings.REG_ENABLED:
+        return render(request, 'registration/reg-disabled.html', { 'mailto' : settings.FROM_EMAIL })
     if not can_pre_reg(request):
         return render(request, 'registration/pre-reg-only-sorry.html', { 'mailto' : settings.FROM_EMAIL })
 
