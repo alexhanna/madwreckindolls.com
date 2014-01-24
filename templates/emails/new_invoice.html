@@ -3,8 +3,7 @@
 <br>
 Hello {{ skater_short_name }},<br>
 <br>
-April dues payments are due on Saturday, April 2. 
-
+February dues payments are due on Sunday, February 2nd.
 {% if skater.balance > 0 %}
 Your balance is <b>${{ skater.balance }}</b>.<br>
 {% else %}
@@ -13,9 +12,12 @@ It doesn't appear that you owe any dues currently. (We have you in the "{{ skate
 <br>
 
 {% if skater.balance > 0 and skater.automatic_billing and skater.stripe_customer_id != "" %}
-<b>You have automatic billing enabled. We will attempt to charge your card on 4/2 for the balance above.</b><br>
+<b>You have automatic billing enabled. We will attempt to charge your card on the due date for the balance above.</b><br>
 <br>
 {% endif %}
+
+If you do not know your password for the online payment system you can <a href="https://madwreckindolls.com/rink/password-reset/">request a password reset</a>.<br>
+<br>
 
 <a style="font-size:18px;font-weight:bold;" href="https://madwreckindolls.com/rink/">Click to pay your MWD dues online:</a><br>
 <br>
@@ -23,11 +25,12 @@ It doesn't appear that you owe any dues currently. (We have you in the "{{ skate
 
 <br>
 <br>
-
-If chose not to pay online, you can pay The Auditor in person with cash, checks, or credit card. You can also mail a check to The Auditor. Additionally, there is also a MWD mailbox located at The Auditor's, you can place an envelope with your name and payment (cash or check).<br>
+If chose not to pay online, you can pay The Auditor in person with cash, checks, or credit card. You can also mail a check to The Auditor or put check or cash in the new lockbox at Fast Forward. Additionally, there is also a MWD mailbox located at The Auditor's, you can place an envelope with your name and payment (cash or check).<br>
 <br>
-Heidi Silvers<br>
-c/o Mad Wreckin' Dolls<br>
+Checks should be made payable to <b>Mad Wreckin' Dolls</b> or <b>MWD</b>.<br>
+<br>
+Mad Wreckin' Dolls<br>
+c/o Heidi Silvers<br>
 1 Loretta Ct<br>
 Madison, WI 53716<br>
 <br>

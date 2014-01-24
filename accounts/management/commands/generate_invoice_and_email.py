@@ -10,9 +10,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        month_name = "May"
-        billing_period = 4
-        limit = 150
+        month_name = "February"
+        billing_period = 13
+        limit = 200
         count = 0
 
         schedule = SkateSessionPaymentSchedule.objects.get(pk=billing_period)
