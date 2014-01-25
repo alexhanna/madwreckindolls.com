@@ -170,13 +170,12 @@ def emergency_info(request):
             """Generate Invoice"""
             """ If dues amount is zero, just create an account. """
             dues_amount = False
-            skate_session = SkateSession.objects.get(name__exact = settings.REGISTRATION_SESSION_NAME)
-            if skate_session:
-                billing_period = SkateSessionPaymentSchedule.objects.filter(session=skate_session)[0:1].get()
-                if billing_period:
-                    dues_amount = billing_period.get_dues_amount(status=skater.status)
-                    invoice = generate_scheduled_invoice(skater, billing_period)
-                    request.session['invoice'] = invoice
+
+            billing_period = SkateSessionPaymentSchedule.objects.get(pk=settings.REGISTRATION_BILLING_PERIOD)
+            if billing_period:
+                dues_amount = billing_period.get_dues_amount(status=skater.status)
+                invoice = generate_scheduled_invoice(skater, billing_period)
+                request.session['invoice'] = invoice
 
             """ Something isn't setup right (no valid skate session, no valid billing period) """
             if not dues_amount:
