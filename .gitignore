@@ -6,3 +6,4 @@ settings_local.py
 *.swp
 media/*
 */migrations/*
+.idea
