@@ -544,7 +544,7 @@ class Skater(AbstractBaseUser):
     user_hash = models.CharField(max_length=50, unique = True)
     account_create_date = models.DateTimeField(auto_now_add = True)
     account_modify_date = models.DateTimeField(auto_now = True)
-    registration_completed = models.BooleanField("Registration Completed")
+    registration_completed = models.DateTimeField(auto_now = False, blank = True)
 
 @receiver(pre_save, sender=Skater)
 def skater_save_handler(sender, instance, **kwargs):

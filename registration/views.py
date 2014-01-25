@@ -10,6 +10,7 @@ from legal.models import LegalDocumentBinder, LegalDocument, LegalDocumentSignat
 from mwd import settings
 from mwd.utilities import get_client_ip
 from django.db import IntegrityError
+from datetime import datetime
 
 # If pre-registration is going on, only allow existing accounts to access the page for pre-registration
 # Returns False if the user is ineligible for pre-reg
@@ -297,6 +298,10 @@ def payment(request):
              'STRIPE_PUBLISHABLE' : settings.STRIPE_PUBLISHABLE, }
     
     skater = Skater.objects.get(pk=request.session.get("skater").id)
+
+    """Indicate that the skater at least got this far in registration"""
+    skater.registration_completed = datetime.now()
+    skater.save()
     
     try:
         invoice = request.session.get("invoice")
@@ -336,7 +341,6 @@ def payment(request):
         if skater.balance <= 0:
             invoice.mark_paid()
 
-        skater.registration_completed = True
         skater.payment_method = payment_method
         skater.automatic_billing = automatic_billing
         skater.save()
