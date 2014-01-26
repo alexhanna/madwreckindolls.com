@@ -23,18 +23,15 @@ class Command(BaseCommand):
           with open(file, 'rb') as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='"')
             for row in reader:
-                    email = row[4]
-                    try:
+                        email = row[2]
+                        #try:
                         skater = Skater.objects.create_user(email, Skater.objects.make_random_password())
+                        
                         skater.status = SkaterStatus.objects.get(name__exact = settings.REGISTRATION_INACTIVE_STATUS)
-
-                        last_name = row[0]
-                        first_name = row[1]
-
                         skater.first_name = row[1]
                         skater.last_name = row[0]
 
                         skater.save()
                         self.stdout.write( str(count) + " OK! " + email )
-                    except:
-                        self.stdout.write( str(count) + " OH CRAP ----- Problem importing row: " + email )
+                        #except:
+                        #    self.stdout.write( str(count) + " OH CRAP ----- Problem importing row: " + email )

@@ -28,6 +28,14 @@ class Command(BaseCommand):
 
                     if skater:
 
+                        if row[2] != "" and row[2] != skater.derby_name:
+                            skater.derby_name = row[2]
+                            skater.save()
+                        if row[3] != "" and row[3] != skater.derby_number:
+                            skater.derby_number = row[3]
+                            skater.save()
+
+
                         html = render_to_string('emails/pre-reg-invite.html',
                             {
                                 'skater' : skater,
@@ -36,7 +44,7 @@ class Command(BaseCommand):
                         )
 
                         msg = EmailMultiAlternatives(
-                                "Mad Wreckin' Dolls Fall 2013 Registration",
+                                "Mad Wreckin' Dolls Spring 2014 Registration",
                                 html,
                                 settings.FROM_EMAIL,
                                 [ skater.email ],
