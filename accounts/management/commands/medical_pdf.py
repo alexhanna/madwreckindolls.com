@@ -34,6 +34,12 @@ class Command(BaseCommand):
             pdf.ln(20)
             
             pdf.set_font('DejaVu','',16)
+            pdf.cell(60,40,'Date of Birth:')
+            pdf.set_font('DejaVu','',24)
+            pdf.cell(0,40, str(skater.dob))
+            pdf.ln(10)
+            
+            pdf.set_font('DejaVu','',16)
             pdf.cell(60,40,'Emergency Contact:')
             pdf.set_font('DejaVu','',24)
             pdf.cell(0,40, skater.emergency_contact)
