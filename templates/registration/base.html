@@ -102,13 +102,15 @@ html, body {
 
 #div_id_code_of_conduct div.controls,
 #div_id_wftda div.controls,
-#div_id_mwd div.controls {
+#div_id_mwd div.controls,
+#div_id_mrd div.controls {
     margin-left:0;
 }
 
 #div_id_code_of_conduct div.controls textarea,
 #div_id_wftda div.controls textarea,
-#div_id_mwd div.controls textarea {
+#div_id_mwd div.controls textarea,
+#div_id_mrd div.controls textarea {
     width: 98%;
     height: 320px;
     font-size: 9pt;
@@ -280,6 +282,7 @@ $(document).ready(function() {
 
     // Legal form textarea
     $('#id_mwd').attr("readonly", "readonly");
+    $('#id_mrd').attr("readonly", "readonly");
 
 });
 

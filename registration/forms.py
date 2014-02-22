@@ -197,6 +197,12 @@ class LegalForm(forms.Form):
             label = "",
     )
 
+    mrd = forms.CharField(
+            widget = forms.Textarea(),
+            required = False,
+            label = "",
+    )
+
     code_of_conduct_agree = forms.BooleanField(
         label = """<b>By checking this box I certify that I have read, understand, and agree to abide by the above terms.</b>""",
         required = True,

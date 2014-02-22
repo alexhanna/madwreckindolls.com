@@ -250,11 +250,11 @@ def legal_stuff(request):
     if mwd_binder:
         document = mwd_binder.get_active_version()
         if document:
-            text = {'mwd' : document.text }
+            text_mwd = document.text
         else:
-            text = { 'mwd' : "Problem pulling legal document from backend...." }
+            text_mwd = "Problem pulling legal document from backend...."
     else:
-        text = {'mwd': 'Legal document not found in backend.....'}
+        text_mwd = 'Legal document not found in backend.....'
     
     # Check to see if they already signed it
     try:
@@ -262,6 +262,16 @@ def legal_stuff(request):
         return HttpResponseRedirect(reverse('registration.views.payment'))
     except LegalDocumentSignature.DoesNotExist:
         pass
+    
+    mrd_binder = LegalDocumentBinder.objects.get(short_name__exact = "mrd")
+    if mrd_binder:
+        document = mrd_binder.get_active_version()
+        if document:
+            text_mrd = document.text
+        else:
+            text_mrd = "Problem pulling legal document from backend...."
+    else:
+        text_mrd = 'Legal document not found in backend.....'
     
     if request.method == 'POST':
         form = LegalForm(request.POST)
@@ -275,6 +285,8 @@ def legal_stuff(request):
                 sig.save()
             return HttpResponseRedirect(reverse('registration.views.payment'))
     
+    text = { "mwd":text_mwd, "mrd":text_mrd }
+
     form = LegalForm(initial=text)
 
     return render(request, 'registration/basic-registration-form.html', { 'form': form, 'step': 4, 'step_info': 'Legal', })
