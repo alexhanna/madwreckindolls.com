@@ -36,7 +36,7 @@ class Command(BaseCommand):
                             skater.save()
 
 
-                        html = render_to_string('emails/pre-reg-invite.html',
+                        html = render_to_string('emails/pre-reg-invite-simple.html',
                             {
                                 'skater' : skater,
                                 'skater_short_name': skater.get_short_name(),
@@ -44,7 +44,7 @@ class Command(BaseCommand):
                         )
 
                         msg = EmailMultiAlternatives(
-                                "Mad Wreckin' Dolls Spring 2014 Registration",
+                                "Mad Wreckin' Dolls Fall 2014 Registration",
                                 html,
                                 settings.FROM_EMAIL,
                                 [ skater.email ],

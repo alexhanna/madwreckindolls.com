@@ -10,14 +10,15 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        month_name = "February"
-        billing_period = 13
+        month_name = "Second Summer Session"
+        billing_period = 19
         limit = 200
         count = 0
 
         schedule = SkateSessionPaymentSchedule.objects.get(pk=billing_period)
 
-        skaters = Skater.objects.all()
+        #skaters = Skater.objects.all()
+        skaters = Skater.objects.exclude(status=2)
         #skaters = Skater.objects.filter(pk=1)
 
         for skater in skaters:
@@ -49,7 +50,7 @@ class Command(BaseCommand):
                 )
 
                 msg = EmailMultiAlternatives(
-                            "Mad Wreckin' Dolls " + month_name + " Dues",
+                            "Mad Wreckin' Dolls " + month_name + " Dues (Fixed!)",
                             html,
                             settings.FROM_EMAIL,
                             [ skater.email ],
