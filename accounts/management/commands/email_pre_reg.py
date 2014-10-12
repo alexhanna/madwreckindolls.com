@@ -16,7 +16,7 @@ class Command(BaseCommand):
           with open(file, 'rb') as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='"')
             for row in reader:
-                    email = row[4]
+                    email = row[0]
 
                     if email != "":
 
@@ -28,12 +28,12 @@ class Command(BaseCommand):
 
                     if skater:
 
-                        if row[2] != "" and row[2] != skater.derby_name:
-                            skater.derby_name = row[2]
-                            skater.save()
-                        if row[3] != "" and row[3] != skater.derby_number:
-                            skater.derby_number = row[3]
-                            skater.save()
+                        #if row[2] != "" and row[2] != skater.derby_name:
+                        #    skater.derby_name = row[2]
+                        #    skater.save()
+                        #if row[3] != "" and row[3] != skater.derby_number:
+                        #    skater.derby_number = row[3]
+                        #    skater.save()
 
 
                         html = render_to_string('emails/pre-reg-invite-simple.html',

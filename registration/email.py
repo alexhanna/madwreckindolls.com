@@ -14,9 +14,7 @@ Dues payment of $""" + str(skater.balance) + " must be paid by " + settings.REGI
 <br>
 <b>Here's how to pay:</b><br>
 <br>
-1. Find The Auditor (aka. Audi) in person and hand them cash, check, credit cards and sweaty hugs.<br>
-<br>
-2.  """ + settings.REGISTRATION_MAIL_INSTRUCTIONS + """<br>
+""" + settings.REGISTRATION_MAIL_INSTRUCTIONS + """<br>
 <br>
 
 """
