@@ -10,8 +10,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        month_name = "Second Summer Session"
-        billing_period = 19
+        month_name = "February"
+        billing_period = 25
         limit = 200
         count = 0
 
@@ -50,7 +50,7 @@ class Command(BaseCommand):
                 )
 
                 msg = EmailMultiAlternatives(
-                            "Mad Wreckin' Dolls " + month_name + " Dues (Fixed!)",
+                            "Mad Wreckin' Dolls " + month_name + " Dues",
                             html,
                             settings.FROM_EMAIL,
                             [ skater.email ],

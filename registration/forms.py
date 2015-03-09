@@ -226,7 +226,7 @@ class AnythingElseForm(forms.Form):
         widget = forms.Textarea(),
         label = "Is there anything else we should know?",
         required = False,
-        help_text = "Examples:<ul><li>I once wrestled a crocodile with my bare hands and won.</li><li>Bacon is delicious!</li><li>I'm so excited for derby!</li><li>I can't wait to hit bitches!</li></ul>",
+        help_text = "Examples:<ul><li>What's something nobody else knows about you?</li><li>Bacon is quite enjoyable.</li><li>I'm so excited for derby!</li><li>I can't wait to hit bitches!</li></ul>",
     )
     
     def __init__(self, *args, **kwargs):
