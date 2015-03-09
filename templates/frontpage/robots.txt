@@ -2,3 +2,4 @@ User-Agent: *
 Disallow: /rink
 Disallow: /registration
 Disallow: /admin
+Disallow: /newsletter

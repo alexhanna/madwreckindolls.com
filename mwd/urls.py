@@ -7,6 +7,7 @@ urlpatterns = patterns('',
     # Homepage
     url(r'^$', 'frontpage.views.index'),
     url(r'^robots.txt$', 'frontpage.views.robotstxt'),
+    url(r'^newsletter/', 'frontpage.views.newsletter'),
 
     # Skater management portal
     url(r'^rink/', include('rink.urls')),
