@@ -10,8 +10,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        month_name = "February"
-        billing_period = 25
+        month_name = "June"
+        billing_period = 29
         limit = 200
         count = 0
 
