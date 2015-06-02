@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     'accounts',
     'registration',
     'rink',
+    'surveys',
 )
 
 # A sample logging configuration. The only tangible logging
