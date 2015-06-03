@@ -2,39 +2,9 @@
 
 {% block content %}
 
-<style type="text/css">
-div.spacer {
-	margin: 35px 0 10px 0;
-	border-bottom: 1px dotted #eaeaea;
-}
-h2 span {
-	color: #aeaeae;
-}
-</style>
-
-<script type="text/javascript">
-$(document).ready(function() { 
-	$('#survey-picker').change(function() { 
-		window.location = "/rink/survey-tools/" + $(this).val();
-	});
-});
-</script>
-
-<select id="survey-picker">
-	<option value="">-- Select a survey --</option>
-	{% for survey in surveys %}
-		<option value="{{ survey.slug_url }}">{{ survey }}</option>
-	{% endfor %}
-</select>
-
-<div style="border-bottom:1px dotted #eaeaea;margin:15px 0 10px 0;"></div>
-
-{% if error %}{{ error }}{% endif %}
-
+{% include "rink/survey_header.html" %}
 
 {% if survey %}
-
-<h1>{{ survey }}</h1>
 
 <!-- only using tables because we're still on an aaaaaaincient version of bootstrap :( -->
 
@@ -82,6 +52,20 @@ $(document).ready(function() {
 
 {% endfor %}
 
+<div style="border-bottom:1px dotted #eaeaea;margin:15px 0 10px 0;"></div>
+
+<h2>Comments</h2>
+
+{% if comments.count == 0 %}
+<p class="muted">No comments have been submitted.</p>
+{% endif %}
+
+{% for comment in comments %}
+<br>
+<blockquote>
+	<p>{{ comment.comment }}</p>
+</blockquote>
+{% endfor %}
 
 <div style="border-bottom:1px dotted #eaeaea;margin:15px 0 10px 0;"></div>
 

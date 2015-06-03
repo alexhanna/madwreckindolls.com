@@ -1,0 +1,50 @@
+<style type="text/css">
+div.spacer {
+	margin: 35px 0 10px 0;
+	border-bottom: 1px dotted #eaeaea;
+}
+h2 span {
+	color: #aeaeae;
+}
+div.container.content {
+	padding-top: 70px;
+}
+</style>
+
+<script type="text/javascript">
+$(document).ready(function() { 
+	$('#survey-picker').change(function() { 
+		window.location = "/rink/survey-tools/" + $(this).val();
+	});
+});
+</script>
+
+<select id="survey-picker">
+	<option value="">-- Select a survey --</option>
+	{% for survey_select in surveys %}
+		<option value="{{ survey_select.slug_url }}" {% if survey_select == survey %}selected="selected"{% endif %}>{{ survey_select }}</option>
+	{% endfor %}
+</select> <a style="padding-left:25px" href="#">Create New Survey</a>
+
+<div style="border-bottom:1px dotted #eaeaea;margin:15px 0 10px 0;"></div>
+
+{% if error %}{{ error }}{% endif %}
+
+
+{% if survey %}
+
+<h1>{{ survey }}</h1>
+
+<ul class="nav nav-tabs">
+	<li {% if tab == "stats" %}class="active"{% endif %}>
+		<a href="/rink/survey-tools/{{ survey.slug_url }}">Vote Stats and Responses</a>
+	</li>
+	<li {% if tab == "invite" %}class="active"{% endif %}>
+		<a href="/rink/survey-tools/{{ survey.slug_url }}/invite">Invite Members to Vote</a>
+	</li>
+	<li {% if tab == "setup" %}class="active"{% endif %}>
+		<a href="/rink/survey-tools/{{ survey.slug_url }}/edit">Survey Setup</a>
+	</li>
+</ul>
+
+{% endif %}

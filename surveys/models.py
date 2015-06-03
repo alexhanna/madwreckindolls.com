@@ -43,6 +43,9 @@ class SurveyInvite(models.Model):
     date_sent = models.DateTimeField(auto_now_add=True)
     date_responded = models.DateTimeField(blank=True, null=True)
 
+    def get_url(self):
+        return "http://madwreckindolls.com:8000/survey/%s/%s" % (survey.slug_url, self.hash)
+
     def responded(self):
         if self.date_responded:
             return True

@@ -1,14 +1,18 @@
 
 from mwd import settings
+from mwd.utilities import random_string
+
 from accounts.models import PaymentError, Invoice, Receipt, SkateSessionPaymentSchedule, Skater, SkaterStatus
 from rink.forms import PaymentForm, AutopayForm, ProcessForm, AdminSkaterStatusForm, AdminSkaterPaymentForm
-from surveys.models import Survey, SurveyQuestion, SurveyAnswer, SurveyInvite, SurveyResponseAnswer
+from surveys.models import Survey, SurveyQuestion, SurveyAnswer, SurveyInvite, SurveyResponseAnswer, SurveyResponse
 
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
 from django.db.models import Count
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMultiAlternatives
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.template.loader import render_to_string
 
 from datetime import date, datetime
 
@@ -248,7 +252,7 @@ def skater_tools_payment(request, skater_id):
 
 
 @login_required
-def survey_tools(request, slug):
+def survey_stats(request, slug):
     if not request.user.is_admin:
         return render(request, 'rink/access_denied.html')
 
@@ -258,32 +262,20 @@ def survey_tools(request, slug):
         try:
             survey = Survey.objects.get(slug_url=slug)
         except Survey.DoesNotExist:
-            return render(request, 'rink/survey_tools.html', {'surveys': all_surveys, 'error': "That survey does not appear to exist." })
+            return render(request, 'rink/survey_stats.html', {'surveys': all_surveys, 'error': "That survey does not appear to exist." })
+    else:
+        return render(request, 'rink/survey_stats.html', {'surveys': all_surveys} )
 
 
     questions = SurveyQuestion.objects.filter(survey=survey).all().select_related()
-
-    """
-    Survey title
-        Total invites sent 
-        Total responses Received
-        Who hasn't replied?
-
-    Question
-        Answer 12 reponses, 4%
-        Answer
-
-
-    Survey Comments
-        "quote"
-
-    """
 
     invites_sent = SurveyInvite.objects.filter(survey=survey).all()
     invites_responded = SurveyInvite.objects.filter(survey=survey, date_responded__isnull=False)
     invites_waiting = SurveyInvite.objects.filter(survey=survey, date_responded__isnull=True)
 
     invites_responded_percent = int((float(invites_responded.count()) / invites_sent.count()) * 100)
+
+    comments = SurveyResponse.objects.filter(survey=survey).exclude(comment="").all()
 
     for question in questions:
 
@@ -320,19 +312,105 @@ def survey_tools(request, slug):
                     
         question.response_answers = answers
 
-
-
-    return render(request, 'rink/survey_tools.html', {
+    return render(request, 'rink/survey_stats.html', {
         'surveys': all_surveys, 
         'survey': survey,
         'questions': questions,
+        'comments': comments,
 
         'invites_sent': invites_sent,
         'invites_responded': invites_responded,
         'invites_waiting': invites_waiting,
         'invites_responded_percent': invites_responded_percent,
+
+        'tab': 'stats',
     })
 
     
+@login_required
+def survey_invite(request, slug):
+    if not request.user.is_admin:
+        return render(request, 'rink/access_denied.html')
+    
+    all_surveys = Survey.objects.all()
+
+    if slug:
+        try:
+            survey = Survey.objects.get(slug_url=slug)
+        except Survey.DoesNotExist:
+            return render(request, 'rink/survey_stats.html', {'surveys': all_surveys, 'error': "That survey does not appear to exist." })
+    else:
+        return render(request, 'rink/survey_stats.html', {'surveys': all_surveys} )
+
+
+    submit_message = False
+    if request.method == "POST":
+        invites = request.POST.getlist('invite')
+        
+        sent = 0
+        failed = 0
+
+        for invite in invites:
+            try:
+                sk = Skater.objects.get(pk=invite)
+
+                survey_invite = SurveyInvite()
+                survey_invite.user = sk
+                survey_invite.survey = survey
+                survey_invite.hash = random_string(32)
+                survey_invite.date_sent = datetime.now()
+                survey_invite.save()
+
+
+                html = render_to_string('emails/survey_invite.html',
+                            {
+                                'skater': sk,
+                                'skater_short_name': sk.get_short_name(),
+                                'survey': survey,
+                                'invite': survey_invite,
+                            }
+                )
+
+                msg = EmailMultiAlternatives(
+                            "Mad Wreckin' Dolls Voting - %s" % (survey),
+                            html,
+                            settings.FROM_EMAIL,
+                            [ sk.email ],
+                            [ settings.FROM_EMAIL ],
+                            headers = {
+                                'Reply-To' : settings.FROM_EMAIL,
+                                'CC' : "finance@madwreckindolls.com",
+                                'Content-Type' : 'text/html'
+                            },
+                )
+                
+                msg.content_subtype = "html"
+                msg.send(fail_silently = False)
+
+                sent = sent + 1
+
+            except Skater.DoesNotExist:
+                """ failed for some reason or another """
+                failed = failed + 1
+
+        submit_message = "Sent %s voting invites to selected members." % (sent)
+        if failed > 0:
+            submit_message = submit_message + "<br><br><storng>Failed to sent %s invites for whatever reason. Weird." % (failed)
+
+
+    all_skaters = Skater.objects.exclude(status__name="inactive").all()
+    invited = all_skaters.filter(survey_invite__survey=survey)
+    not_invited = all_skaters.exclude(pk__in=invited)
+
+    return render(request, 'rink/survey_invite.html', {
+        'surveys': all_surveys,
+        'survey': survey,
+        'tab': 'invite',
+        'submit_message': submit_message,
+
+        'invited': invited,
+        'not_invited': not_invited,
+    })
+
 
 

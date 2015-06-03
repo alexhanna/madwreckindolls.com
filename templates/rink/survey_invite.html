@@ -1,0 +1,93 @@
+{% extends "rink/base.html" %}
+{% block content %}
+{% include "rink/survey_header.html" %}
+{% if survey %}
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#check_all").click(function(){
+    	$('input:checkbox').not(this).prop('checked', this.checked);
+	});
+});
+</script>
+
+
+{% if not_invited.count > 0 %}
+<h2>Invite to Vote</h2>
+
+{% if submit_message %}
+<div class="info alert-info" style="padding:8px;">{{ submit_message }}</div>
+{% endif %}
+
+<form action="?" method="POST">
+{% csrf_token %}
+
+<!-- stop using tables, upgrade bootstrap for this project. FML -->
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th style="width:20px;"><input id="check_all" type="checkbox"></th>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Level</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for skater in not_invited %}
+		<tr>
+			<td class="text-center"><input class="skater-check" type="checkbox" name="invite" value="{{ skater.id }}"></td>
+			<td>{{ skater }}</td>
+			<td>{{ skater.email }}</td>
+			<td></td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+
+<button class="btn btn-primary" type="submit">Send Invite to Vote</button>
+</form>
+
+
+{% else %}
+<p>There are no skaters available to invite.</p>
+{% endif %}
+
+
+
+<div style="border-bottom:1px dotted #eaeaea;margin:45px 0 40px 0;"></div>
+
+
+
+{% if invited.count > 0 %}
+<h2>Already Invited to Vote</h2>
+
+<!-- stop using tables, upgrade bootstrap for this project. FML -->
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Voted On Date</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for invite in invited %}
+		<tr {% if invite.survey_invite.get.date_responded %}class="success"{% endif %}>
+			<td>{{ invite }}</td>
+			<td>{{ invite.email }}</td>
+			<td>{% if invite.survey_invite.get.date_responded %}{{invite.survey_invite.get.date_responded}}{% else %}<span class="muted">Not Voted</span>{% endif %}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+{% else %}
+<p>No skaters have been invited to vote in this survey.</p>
+{% endif %}
+
+
+
+
+{% endif %}
+{% endblock %}

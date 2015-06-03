@@ -19,7 +19,8 @@ urlpatterns = patterns('',
                        (r'^admin-tools/skaters/(?P<skater_id>\d+)$', 'rink.views.skater_tools'),
                        (r'^admin-tools/skaters-payment/(?P<skater_id>\d+)$', 'rink.views.skater_tools_payment'),
 
-                       (r'^survey-tools/?(?P<slug>[-\w\d]+)?$', 'rink.views.survey_tools'),
+                       (r'^survey-tools/?(?P<slug>[-\w\d]+)?$', 'rink.views.survey_stats'),
+                       (r'^survey-tools/(?P<slug>[-\w\d]+)/invite$', 'rink.views.survey_invite'),
 
                        (r'^login/$', 
                         'django.contrib.auth.views.login', 
