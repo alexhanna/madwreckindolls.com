@@ -12,13 +12,12 @@ $(document).ready(function() {
 });
 </script>
 
-
-{% if not_invited.count > 0 %}
-<h2>Invite to Vote</h2>
-
 {% if submit_message %}
 <div class="info alert-info" style="padding:8px;">{{ submit_message }}</div>
 {% endif %}
+
+{% if not_invited.count > 0 %}
+<h2>Invite to Vote</h2>
 
 <form action="?" method="POST">
 {% csrf_token %}

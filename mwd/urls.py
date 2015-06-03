@@ -17,7 +17,7 @@ urlpatterns = patterns('',
     url(r'^registration/', include('registration.urls')),
 
     # Surveys
-    url(r'^surveys/', include('surveys.urls')),
+    url(r'^voting/', include('surveys.urls')),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
