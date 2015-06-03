@@ -1,2 +1,68 @@
 {% extends "surveys/base.html" %}
 
+{% block title %}MWD Survey - {{ survey.name }}{% endblock %}
+
+
+<!-- start content -->
+{% block content %}
+<h1>{{ survey.name }}</h1>
+{% if survey.description %}<div class="survey-description">{{ survey.description|safe }}</div>{% endif %}
+
+{% if errors %}
+<div class="alert alert-error">
+	<strong>Uh oh! Looks like you may have missed a question.</strong>
+	<br>
+	<br>
+	Please scroll down and check it your submission.
+</div>
+{% endif %}
+
+
+<form action="?" method="post">
+{% csrf_token %}
+
+<!-- start question -->
+{% for question in questions %}
+
+<div class="control-group {% if question.error %}error{% endif %}">
+	<h2>{{ question.question }}</h2>
+
+	<!-- start answer -->
+	{% for answer in question.answers.all %}
+	<div class="radio">
+		<label>
+			<input type="radio" name="question{{ question.id }}" value="{{ answer.answer }}" {% if question.selected.answer == answer.answer %}checked="checked"{% endif %}>
+		{{ answer.answer }}
+		</label>
+	</div>
+	{% endfor %}
+	<!-- end answer -->
+
+	{% if question.allow_write_in %}
+	<div class="radio">
+		<label>
+			<input type="radio" name="question{{ question.id }}" value="custom" {% if question.custom != None %}checked="checked"{% endif %}>
+			<input type="text" name="question{{ question.id }}custom" value="{{ question.custom }}" placeholder="Write-In Vote">
+		</label>
+	</div>
+	{% endif %}
+
+</div>
+
+
+{% endfor %}
+<!-- end question -->
+
+<br>
+<br>
+<textarea class="form-control" rows="3" name="anything_else" placeholder="Anything else you'd like to add?" style="width:100%">{{ anything_else }}</textarea>
+
+<br>
+<div style="margin-top: 20px;">
+	<button type="submit" class="btn btn-primary btn-lg btn-block btn-lg" >Submit Survey</button>
+</div>
+
+</form>
+
+{% endblock %}
+<!-- end content -->

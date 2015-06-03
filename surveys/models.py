@@ -19,7 +19,7 @@ class Survey(models.Model):
 
 
 class SurveyQuestion(models.Model):
-    survey = models.ForeignKey(Survey, related_name="question")
+    survey = models.ForeignKey(Survey, related_name="questions")
     question = models.TextField()
     allow_write_in = models.BooleanField(default=False)
     allow_comment = models.BooleanField(default=False)
@@ -29,7 +29,7 @@ class SurveyQuestion(models.Model):
 
 
 class SurveyAnswer(models.Model):
-    question = models.ForeignKey(SurveyQuestion, related_name="answer")
+    question = models.ForeignKey(SurveyQuestion, related_name="answers")
     answer = models.TextField()
 
     def __unicode__(self):
