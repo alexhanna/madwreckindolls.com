@@ -273,7 +273,10 @@ def survey_stats(request, slug):
     invites_responded = SurveyInvite.objects.filter(survey=survey, date_responded__isnull=False)
     invites_waiting = SurveyInvite.objects.filter(survey=survey, date_responded__isnull=True)
 
-    invites_responded_percent = int((float(invites_responded.count()) / invites_sent.count()) * 100)
+    try:
+        invites_responded_percent = int((float(invites_responded.count()) / invites_sent.count()) * 100)
+    except:
+        invites_responded_percent = 0
 
     comments = SurveyResponse.objects.filter(survey=survey).exclude(comment="").all()
 
@@ -303,7 +306,10 @@ def survey_stats(request, slug):
         answers_count = SurveyResponseAnswer.objects.filter(question=question).values('answer').annotate(votes=Count('answer'))
         total_responses = responses.count()
         for answer_count in answers_count:
-            answer_count["percent"] = int((float(answer_count["votes"]) / total_responses) * 100)
+            try:
+                answer_count["percent"] = int((float(answer_count["votes"]) / total_responses) * 100)
+            except:
+                answer_count["percent"] = 0
 
             for stats_answer in answers:
                 if  stats_answer["answer"] == answer_count["answer"]:
