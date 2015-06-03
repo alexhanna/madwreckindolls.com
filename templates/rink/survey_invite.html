@@ -68,15 +68,13 @@ $(document).ready(function() {
 		<tr>
 			<th>Name</th>
 			<th>Email</th>
-			<th>Voted On Date</th>
 		</tr>
 	</thead>
 	<tbody>
 	{% for invite in invited %}
-		<tr {% if invite.survey_invite.get.date_responded %}class="success"{% endif %}>
+		<tr>
 			<td>{{ invite }}</td>
 			<td>{{ invite.email }}</td>
-			<td>{% if invite.survey_invite.get.date_responded %}{{invite.survey_invite.get.date_responded}}{% else %}<span class="muted">Not Voted</span>{% endif %}</td>
 		</tr>
 	{% endfor %}
 	</tbody>
