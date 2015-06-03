@@ -1,0 +1,121 @@
+{% extends "rink/base.html" %}
+
+{% block content %}
+
+<style type="text/css">
+div.spacer {
+	margin: 35px 0 10px 0;
+	border-bottom: 1px dotted #eaeaea;
+}
+h2 span {
+	color: #aeaeae;
+}
+</style>
+
+<script type="text/javascript">
+$(document).ready(function() { 
+	$('#survey-picker').change(function() { 
+		window.location = "/rink/survey-tools/" + $(this).val();
+	});
+});
+</script>
+
+<select id="survey-picker">
+	<option value="">-- Select a survey --</option>
+	{% for survey in surveys %}
+		<option value="{{ survey.slug_url }}">{{ survey }}</option>
+	{% endfor %}
+</select>
+
+<div style="border-bottom:1px dotted #eaeaea;margin:15px 0 10px 0;"></div>
+
+{% if error %}{{ error }}{% endif %}
+
+
+{% if survey %}
+
+<h1>{{ survey }}</h1>
+
+<!-- only using tables because we're still on an aaaaaaincient version of bootstrap :( -->
+
+<table class="table table-hover table-condensed table-striped" style="width: 250px;">
+			<tbody>
+				<tr>
+					<td style="width:125px;text-align:right;">Requests to Vote Sent:</td>
+					<td style="width:50px;">{{ invites_sent.count }}</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;">Votes Waiting:</td>
+					<td>{{ invites_waiting.count }}</td>
+				</tr>
+				<tr>
+					<td style="text-align:right;">Votes Received:</td>
+					<td>{{ invites_responded.count }} &nbsp;&nbsp;&nbsp;({{ invites_responded_percent }}%)</td>
+				</tr>
+			</tbody>
+</table>
+
+
+{% for question in questions %}
+<div class="spacer"></div>
+<h2><span>#{{forloop.counter}}</span> {{ question }}</h2>
+
+		<table class="table table-hover table-condensed table-striped">
+			<thead>
+				<tr>
+					<th style="width:75px;">Votes</th>
+					<th style="width:50px;">%</th>
+					<th>Answer</th>
+				</tr>
+			</thead>
+			<tbody>
+	{% for answer in question.response_answers %}
+				<tr>
+					<td>{{ answer.count }}</td>
+					<td>{% if answer.percent > 0 %}{{ answer.percent }}%{% endif %}</td>
+					<td>{{ answer.answer }}</td>
+				</tr>
+	{% endfor %}
+
+			</tbody>
+		</table>
+
+{% endfor %}
+
+
+<div style="border-bottom:1px dotted #eaeaea;margin:15px 0 10px 0;"></div>
+
+
+<div class="row">
+	<div class="span5">
+		<h2>Not Voted</h2>
+		<table class="table table-striped">
+			<tbody>
+				{% for waiting in invites_waiting %}
+				<tr>
+					<td>{{ waiting.user }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	<div class="span5 offset2">
+		<h2>Done Voting</h2>
+		<table class="table table-striped">
+			<tbody>
+				{% for waiting in invites_responded %}
+				<tr>
+					<td>{{ waiting.user }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+</div>
+
+
+
+{% endif %}
+
+{% endblock %}

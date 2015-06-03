@@ -1,12 +1,16 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from rink.forms import PaymentForm, AutopayForm, ProcessForm, AdminSkaterStatusForm, AdminSkaterPaymentForm
+
 from mwd import settings
 from accounts.models import PaymentError, Invoice, Receipt, SkateSessionPaymentSchedule, Skater, SkaterStatus
-from datetime import date
+from rink.forms import PaymentForm, AutopayForm, ProcessForm, AdminSkaterStatusForm, AdminSkaterPaymentForm
+from surveys.models import Survey, SurveyQuestion, SurveyAnswer, SurveyInvite, SurveyResponseAnswer
+
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from datetime import datetime
+from django.db.models import Count
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+from datetime import date, datetime
 
 @login_required
 def index(request):
@@ -243,5 +247,92 @@ def skater_tools_payment(request, skater_id):
     return HttpResponseRedirect(reverse('rink.views.skater_tools', kwargs={"skater_id": skater.id } ))
 
 
+@login_required
+def survey_tools(request, slug):
+    if not request.user.is_admin:
+        return render(request, 'rink/access_denied.html')
+
+    all_surveys = Survey.objects.all()
+
+    if slug:
+        try:
+            survey = Survey.objects.get(slug_url=slug)
+        except Survey.DoesNotExist:
+            return render(request, 'rink/survey_tools.html', {'surveys': all_surveys, 'error': "That survey does not appear to exist." })
+
+
+    questions = SurveyQuestion.objects.filter(survey=survey).all().select_related()
+
+    """
+    Survey title
+        Total invites sent 
+        Total responses Received
+        Who hasn't replied?
+
+    Question
+        Answer 12 reponses, 4%
+        Answer
+
+
+    Survey Comments
+        "quote"
+
+    """
+
+    invites_sent = SurveyInvite.objects.filter(survey=survey).all()
+    invites_responded = SurveyInvite.objects.filter(survey=survey, date_responded__isnull=False)
+    invites_waiting = SurveyInvite.objects.filter(survey=survey, date_responded__isnull=True)
+
+    invites_responded_percent = int((float(invites_responded.count()) / invites_sent.count()) * 100)
+
+    for question in questions:
+
+        """
+        Some questions don't have responses or votes, those won't show up in the aggregate functions.
+        Manually smash the stats together with the list of votes/percent counts.
+        """
+        answers = []
+
+        base_answers = SurveyAnswer.objects.filter(question=question).all()
+        for answer in base_answers:
+            answers.append({'answer': answer.answer, 'count': 0, 'percent': 0})
+
+        """
+        Now, check for fill-in answers. Add those to the answers dict.
+        """
+        responses = SurveyResponseAnswer.objects.filter(question=question)
+        for response in responses:
+            for answer in answers:
+                if response.answer == answer["answer"]:
+                    break
+            else:
+                answers.append({'answer': response.answer, 'count': 0, 'percent': 0})
+
+        answers_count = SurveyResponseAnswer.objects.filter(question=question).values('answer').annotate(votes=Count('answer'))
+        total_responses = responses.count()
+        for answer_count in answers_count:
+            answer_count["percent"] = int((float(answer_count["votes"]) / total_responses) * 100)
+
+            for stats_answer in answers:
+                if  stats_answer["answer"] == answer_count["answer"]:
+                    stats_answer["count"] = answer_count["votes"]
+                    stats_answer["percent"] =  answer_count["percent"]
+                    
+        question.response_answers = answers
+
+
+
+    return render(request, 'rink/survey_tools.html', {
+        'surveys': all_surveys, 
+        'survey': survey,
+        'questions': questions,
+
+        'invites_sent': invites_sent,
+        'invites_responded': invites_responded,
+        'invites_waiting': invites_waiting,
+        'invites_responded_percent': invites_responded_percent,
+    })
+
+    
 
 

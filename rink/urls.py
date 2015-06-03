@@ -15,9 +15,11 @@ urlpatterns = patterns('',
                        (r'^profile$', 'rink.views.profile'),
 
                        (r'^admin-tools$', 'rink.views.admin_tools'),
-                       (r'^admin-tools/billing/(?P<billing_filter>all|paid|unpaid|autopay)?$', 'rink.views.billing_tools'),
+                       (r'^admin-tools/billing/(?P<billing_filter>all|paid|(?P<slug>[-\w\d]+)unpaid|autopay)?$', 'rink.views.billing_tools'),
                        (r'^admin-tools/skaters/(?P<skater_id>\d+)$', 'rink.views.skater_tools'),
                        (r'^admin-tools/skaters-payment/(?P<skater_id>\d+)$', 'rink.views.skater_tools_payment'),
+
+                       (r'^survey-tools/?(?P<slug>[-\w\d]+)?$', 'rink.views.survey_tools'),
 
                        (r'^login/$', 
                         'django.contrib.auth.views.login', 

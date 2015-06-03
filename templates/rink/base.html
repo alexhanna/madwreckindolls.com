@@ -108,7 +108,11 @@
             <ul class="nav">
               
               {% if user.is_authenticated %}
-              {% if user.is_admin %}<li><a href="{% url "rink.views.admin_tools" %}">Admin Tools</a></li>{% endif %}
+              {% if user.is_admin %}
+              <li><a href="{% url "rink.views.admin_tools" %}">Finance</a></li>
+              <li><a href="{% url "rink.views.survey_tools" %}">Surveys</a></li>
+              &nbsp;&nbsp;&nbsp;
+              {% endif %}
               <li><a href="{% url "rink.views.dues" %}">Pay Dues</a></li>
               <li><a href="{% url "rink.views.profile" %}">My Profile</a></li>
               <li><a href="{% url "django.contrib.auth.views.logout" %}">Logout</a></li>

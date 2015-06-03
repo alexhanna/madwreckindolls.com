@@ -39,7 +39,7 @@ class SurveyAnswer(models.Model):
 class SurveyInvite(models.Model):
     user = models.ForeignKey(Skater, related_name="survey_invite")
     survey = models.ForeignKey(Survey, related_name="survey_invite")
-    hash = models.TextField(max_length=32)
+    hash = models.TextField(max_length=32, unique=True)
     date_sent = models.DateTimeField(auto_now_add=True)
     date_responded = models.DateTimeField(blank=True, null=True)
 
@@ -50,6 +50,9 @@ class SurveyInvite(models.Model):
 
     def __unicode__(self):
         return "%s" % (self.user.email)
+
+    class Meta:
+        unique_together = ('user', 'survey',)
 
 
 class SurveyResponse(models.Model):
