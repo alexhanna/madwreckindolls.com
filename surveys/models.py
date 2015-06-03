@@ -44,7 +44,7 @@ class SurveyInvite(models.Model):
     date_responded = models.DateTimeField(blank=True, null=True)
 
     def get_url(self):
-        return "http://madwreckindolls.com:8000/survey/%s/%s" % (self.survey.slug_url, self.hash)
+        return "http://madwreckindolls.com:8000/voting/%s/%s" % (self.survey.slug_url, self.hash)
 
     def responded(self):
         if self.date_responded:
